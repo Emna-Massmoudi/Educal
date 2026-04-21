@@ -138,8 +138,8 @@
   <div *ngIf="!loading && !errorMessage && filteredCours().length > 0 && viewMode === 'grid'" class="cours-grid">
     <div *ngFor="let c of filteredCours(); let i = index" class="cours-card" [style.--delay]="i * 70 + 'ms'">
 
-      <div class="card-banner" [style.background]="getBannerGradient(c.categorieId)">
-        <div class="card-banner-emoji">{{ getIcon(c.categorieNom) }}</div>
+      <div class="card-banner">
+  <img [src]="getImage(c)" alt="course image" class="card-img" />
         <div class="card-actions">
           <button class="act-btn act-view" (click)="voirDetail(c)" title="Voir détail">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">

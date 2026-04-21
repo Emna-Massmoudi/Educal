@@ -260,4 +260,7 @@ export class Courses implements OnInit {
     };
     return labels[action] ?? action;
   }
+  getImage(c: any): string {
+  return c.imageUrl || 'assets/img/course/default.jpg';
+}
 }

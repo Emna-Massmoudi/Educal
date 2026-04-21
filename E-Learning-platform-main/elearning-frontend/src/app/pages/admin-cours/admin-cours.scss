@@ -212,8 +212,10 @@ h1 { font-size: 22px; font-weight: 800; color: $text; margin: 0 0 2px; letter-sp
   }
 }
 .card-banner {
-  height: 110px; position: relative;
-  display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 16px;
+  position: relative; /* 🔥 IMPORTANT */
+  height: 180px;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
 }
 .card-banner-emoji { font-size: 38px; filter: drop-shadow(0 2px 8px rgba(0,0,0,.15)); }
 .card-actions {
@@ -231,15 +233,32 @@ h1 { font-size: 22px; font-weight: 800; color: $text; margin: 0 0 2px; letter-sp
   &.act-del  { color: $danger; }
 }
 .status-badge {
-  position: absolute; bottom: 12px; left: 14px;
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
-  backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.3);
-  text-transform: uppercase; letter-spacing: .04em;
-  &.publie  { background: rgba(16,185,129,.2);   color: #d1fae5; }
-  &.attente { background: rgba(245,158,11,.2);   color: #fef3c7; }
-  &.valide  { background: rgba(139,92,246,.2);   color: #ede9fe; }
-  &.retire  { background: rgba(239,68,68,.2);    color: #fee2e2; }
+  position: absolute;
+
+  top: 12px;   /* 🔥 ajuste ici */
+  left: 12px;
+
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  background: rgba(16, 185, 129, 0.9); /* vert */
+  color: white;
+
+  z-index: 2;
+}
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #34d399;
+  border-radius: 50%;
 }
 .card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
 .card-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }

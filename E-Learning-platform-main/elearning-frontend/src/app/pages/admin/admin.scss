@@ -18,7 +18,7 @@ $border-2:  tokens.$border-brand;
 // ── Layout ────────────────────────────────────────────
 .admin-layout {
   font-family: tokens.$font-family;
-  display: flex;
+  display: block;
   min-height: 100vh;
   background: $bg;
 }
@@ -119,36 +119,34 @@ $border-2:  tokens.$border-brand;
 .user-email { font-size: 0.7rem; color: rgba(226,232,240,.56); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .btn-logout {
-  width: 38px; height: 38px; border-radius: 14px; border: 1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,.08); color: rgba(226,232,240,.76);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-  transition: transform .2s ease, background .2s ease, color .2s ease;
-  &:hover {
-    transform: translateY(-1px);
-    background: rgba(239,68,68,.16);
-    color: #fecaca;
-  }
+  border-radius: 999px;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+
+  padding: 6px 16px;
+  min-width: 120px;
+
+  background: transparent;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap; /* 🔥 empêche débordement */
 }
 
 // ── Main content ──────────────────────────────────────
 .main-content {
-  margin-left: 30px;
-  flex: 0;
+  margin-left: 0;              /* 🔥 enlever espace sidebar */
+  max-width: 100%;             /* 🔥 pleine largeur */
+  width: 100%;
+
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  max-width: calc(100vw - 260px);
 
-  // Chaque sous-composant gère son propre padding
-  & > * { display: block; }
-
-  &::before {
-    content: ''; position: fixed; top: -200px; right: -200px;
-    width: 600px; height: 600px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,.07) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-  }
+  padding: 30px;
 }
 
 // ── Mobile Topbar ─────────────────────────────────────
@@ -191,21 +189,8 @@ $border-2:  tokens.$border-brand;
   border: 1px solid rgba(255,255,255,.08);
 }
 
-// ── Sidebar Overlay ───────────────────────────────────
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 99;
-  background: rgba(15,23,42,.5);
-  backdrop-filter: blur(4px);
-  opacity: 0;
-  transition: opacity .3s ease;
-  &.visible {
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
+
+
 
 // ── Responsive ────────────────────────────────────────
 @media (max-width: 960px) {
@@ -236,7 +221,7 @@ $border-2:  tokens.$border-brand;
   }
 }
 
-@include workspaceShell.apply('.admin-layout', false);
+
 .navbar {
   display: flex;
   align-items: center;

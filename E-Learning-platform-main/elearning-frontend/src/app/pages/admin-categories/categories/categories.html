@@ -177,43 +177,57 @@
   </div>
 
   <!-- GRID -->
-  <div *ngIf="!loading && !errorMessage && filteredCategories().length > 0" class="categories-grid">
-    <div *ngFor="let cat of filteredCategories(); let i = index"
-         class="cat-card"
-         [style.--delay]="i * 70 + 'ms'"
-         [style.--g]="getGradient(i)">
+  <div *ngIf="!loading && !errorMessage && filteredCategories().length > 0"
+     class="row home-grid-row">
 
-      <div class="card-banner">
-        <div class="card-emoji">{{ getCategoryIcon(cat.nom) }}</div>
-        <div class="card-btns">
-          <button class="act-btn act-edit" (click)="openEditForm(cat)" title="Modifier">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <button class="act-btn act-manage" (click)="openSousCategories(cat)" title="Gérer sous-catégories">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-              <path d="M3 6H21M3 12H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <button class="act-btn act-del" (click)="confirmDelete(cat)" title="Supprimer">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-              <path d="M4 7H20M10 11V16M14 11V16M5 7L6 19a2 2 0 002 2h8a2 2 0 002-2L19 7M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </button>
+  <div *ngFor="let cat of filteredCategories(); let i = index"
+       class="col-xl-4 col-lg-4 col-md-6 d-flex">
+
+    <article class="home-category-card mb-30">
+
+      <!-- HEADER -->
+      <div class="home-category-card__header">
+        
+        <!-- IMAGE -->
+        <div class="home-category-card__icon">
+          <img [src]="getCategoryImage(i)" [alt]="cat.nom" />
         </div>
+
+        <span class="home-category-card__badge">Formation</span>
       </div>
 
-     <div class="card-body">
-  <h3 class="cat-name">{{ cat.nom }}</h3>
-  <p class="cat-desc">{{ cat.description || 'Aucune description renseignée' }}</p>
-  <div class="card-footer">
-    <span class="badge-sub">📂 {{ getSousCategoriesCount(cat) }} sous-catégorie(s)</span>
+      <!-- CONTENT -->
+      <div class="home-card-body">
+        <h3>{{ cat.nom }}</h3>
+        <p>
+          {{ cat.description || 'Categorie disponible sur la plateforme.' }}
+        </p>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="home-card-footer">
+        <span class="home-card-meta">
+          {{ getSousCategoriesCount(cat) }} sous-categories
+        </span>
+
+        <span class="home-card-link">
+          Voir
+          <i class="far fa-arrow-right"></i>
+        </span>
+      </div>
+
+      <!-- ACTIONS ADMIN -->
+      <div class="card-btns" style="margin-top:10px;">
+        <button class="act-btn act-edit" (click)="openEditForm(cat)">✏️</button>
+        <button class="act-btn act-manage" (click)="openSousCategories(cat)">📂</button>
+        <button class="act-btn act-del" (click)="confirmDelete(cat)">🗑</button>
+      </div>
+
+    </article>
+
   </div>
+
 </div>
-    </div>
-  </div>
 
   <!-- MODAL SOUS-CATÉGORIES -->
   <app-sous-categories

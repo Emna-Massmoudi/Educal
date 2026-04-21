@@ -148,7 +148,9 @@ export class Categories implements OnInit {
   getSousCategoriesCount(category: Categorie): number {
     return category.sousCategories?.length || 0;
   }
-
+getImage(cat: any): string {
+  return cat.imageUrl || 'assets/img/course/course-1.jpg';
+}
   // ─── Ajout ─────────────────────────────────────────
   openAddForm(): void {
     this.nomCategorie = '';
@@ -274,4 +276,16 @@ export class Categories implements OnInit {
   onSousCategoriesUpdated(): void {
     this.loadCategories();
   }
+  getCategoryImage(index: number): string {
+  const images = [
+    'assets/img/course/course-1.jpg',
+    'assets/img/course/course-2.jpg',
+    'assets/img/course/course-3.jpg',
+    'assets/img/course/course-4.jpg',
+    'assets/img/course/course-5.jpg',
+    'assets/img/course/course-6.jpg'
+  ];
+
+  return images[index % images.length];
+}
 }

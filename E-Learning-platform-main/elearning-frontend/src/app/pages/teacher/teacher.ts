@@ -15,6 +15,7 @@ import { PaiementService, WalletFormateurResponse } from '../../services/paiemen
   styleUrl: './teacher.scss',
 })
 export class Teacher implements OnInit {
+  currentYear: number = new Date().getFullYear();
   activeSection: 'formations' | 'etudiants' | 'quiz' = 'formations';
   mobileMenuOpen = false;
 

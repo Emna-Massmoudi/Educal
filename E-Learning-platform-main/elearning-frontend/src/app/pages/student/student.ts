@@ -90,7 +90,7 @@ export class Student implements OnInit {
   quizError = '';
   pageFeedbackMessage = '';
   pageFeedbackTone: 'success' | 'error' | 'info' = 'info';
-
+initialesStudent: string = 'EB';
   constructor(
     private readonly coursService: CoursService,
     private readonly inscriptionService: InscriptionService,
@@ -629,7 +629,7 @@ export class Student implements OnInit {
     }
 
     if (progress.certificatDisponible) {
-      return `Certificat pret avec le code ${progress.certificatCode ?? 'EduNet'}.`;
+      return `Certificat pret avec le code ${progress.certificatCode ?? 'Educal'}.`;
     }
 
     if (progress.termine) {

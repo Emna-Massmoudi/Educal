@@ -309,4 +309,11 @@ $border-2:  tokens.$border-brand;
 
 .btn-logout:hover {
   background: rgba(239,68,68,0.1);
+}.navbar-center {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.navbar-center::-webkit-scrollbar {
+  display: none;
 }

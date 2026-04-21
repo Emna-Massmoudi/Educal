@@ -643,10 +643,47 @@ $border-2:  tokens.$border-brand;
   background: rgba(239,68,68,0.1);
 }
 .logo-icon {
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
+  width: 36px;
+  height: 36px;
+
+  background: linear-gradient(135deg, #2b4eff, #14b8a6); /* ✅ couleurs fixes */
+
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  flex-shrink: 0;
+
+  box-shadow: 0 4px 14px rgba(43, 78, 255, 0.4);
+  color: white;
 }
+/* CONTAINER LOGO */
+.brand-link {
+  display: flex;
+  align-items: center; /* 🔥 aligne verticalement */
+  gap: 10px;
+  text-decoration: none;
+}
+
+/* LOGO */
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #2b4eff, #14b8a6);
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  color: white;
+
+  flex-shrink: 0; /* 🔥 empêche le rétrécissement */
+}
+
 
 .brand-text {
   font-size: 22px;   /* 🔥 plus grand */
@@ -693,4 +730,51 @@ $border-2:  tokens.$border-brand;
 }
 .user-avatar {
   flex-shrink: 0; /* 🔥 empêche écrasement */
+}
+/* ===== FOOTER ===== */
+.footer {
+  background: #0e1133;
+  color: white;
+  margin-top: 50px;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.footer-col {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-title {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.footer-col a {
+  display: block;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 8px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.footer-col a:hover {
+  color: #2b4eff;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding: 15px;
+  background: #0a0c24;
+  font-size: 13px;
+  opacity: 0.7;
 }

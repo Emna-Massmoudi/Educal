@@ -1,77 +1,72 @@
-<header>
-  <div
-    id="header-sticky"
-    [ngClass]="headerSticky
-      ? 'header__area header__padding-2 header__shadow sticky public-header'
-      : 'header__area header__padding-2 header__shadow public-header'"
-  >
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-xl-3 col-lg-4 col-md-6 col-8">
-          <div class="header__left d-flex align-items-center">
-            <div class="logo">
-              <a [routerLink]="['/home']" class="brand-link">
-  <div class="logo-icon">🎓</div>
-  <span class="brand-text">Educal</span>
-</a>
-            </div>
-          </div>
-        </div>
+<nav class="navbar">
 
-        <div class="col-xl-9 col-lg-8 col-md-6 col-4">
-          <div class="header__right d-flex justify-content-end align-items-center">
-            <div class="main-menu main-menu-2">
-              <nav class="d-none d-xl-block">
-                <ul>
-                  <li><a [routerLink]="['/home']" [class.is-active]="isNavItemActive('/home')">Accueil</a></li>
-                  <li><a [routerLink]="['/home']" fragment="categories" [class.is-active]="isNavItemActive('/home', 'categories')">Categories</a></li>
-                  <li><a [routerLink]="['/home']" fragment="courses" [class.is-active]="isNavItemActive('/home', 'courses')">Cours</a></li>
-                  
-                  <li><a [routerLink]="['/home']" fragment="features" [class.is-active]="isNavItemActive('/home', 'features')">Pourquoi Educal</a></li>
-                </ul>
-              </nav>
-            </div>
+  <!-- LEFT -->
+  <a class="navbar-left brand-link" routerLink="/home">
+    <div class="logo-icon">🎓</div>
+    <span class="brand-text">EduCal</span>
+  </a>
 
-            <div class="header__btn header__btn-2 ml-30 d-none d-sm-block" *ngIf="!isAuthenticated">
-              <a [routerLink]="['/login']" class="e-btn">Connexion</a>
-            </div>
+  <!-- CENTER -->
+  <div class="navbar-center">
 
-            <div *ngIf="isAuthenticated" class="public-header__account d-none d-sm-flex">
-              <div class="public-header__profile">
-                <div class="public-header__avatar">{{ userInitials }}</div>
-                <div class="public-header__identity">
-                  <strong>{{ displayName }}</strong>
-                  <span>{{ roleLabel }}</span>
-                </div>
-              </div>
+    <a class="nav-item"
+       [class.active]="isNavItemActive('/home')"
+       routerLink="/home">
+      Accueil
+    </a>
 
-              <a [routerLink]="[dashboardRoute]" class="e-btn public-header__dashboard">
-                {{ dashboardLabel }}
-              </a>
+    <a class="nav-item"
+       [class.active]="isNavItemActive('/home','categories')"
+       [routerLink]="['/home']"
+       fragment="categories">
+      Catégories
+    </a>
 
-              <button type="button" class="e-btn e-btn-border public-header__logout" (click)="logout()">
-                Deconnexion
-              </button>
-            </div>
+    <a class="nav-item"
+       [class.active]="isNavItemActive('/home','courses')"
+       [routerLink]="['/home']"
+       fragment="courses">
+      Cours
+    </a>
 
-            <div class="sidebar__menu d-xl-none">
-              <button
-                type="button"
-                class="sidebar-toggle-btn ml-30"
-                (click)="toggleSidebar()"
-                aria-label="Ouvrir le menu"
-              >
-                <span class="line"></span>
-                <span class="line"></span>
-                <span class="line"></span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <a class="nav-item"
+       [class.active]="isNavItemActive('/home','features')"
+       [routerLink]="['/home']"
+       fragment="features">
+      Pourquoi EduCal
+    </a>
+
   </div>
-</header>
+
+  <!-- RIGHT -->
+  <div class="navbar-right">
+
+    <!-- NON CONNECTÉ -->
+    <a *ngIf="!isAuthenticated"
+       routerLink="/login"
+       class="btn-login">
+      Connexion
+    </a>
+
+    <!-- CONNECTÉ -->
+    <div *ngIf="isAuthenticated" class="navbar-user">
+
+      <div class="user-avatar">{{ userInitials }}</div>
+
+      <a [routerLink]="[dashboardRoute]" class="btn-dashboard">
+        {{ dashboardLabel }}
+      </a>
+
+      <button class="btn-logout" (click)="logout()">
+        Déconnexion
+      </button>
+
+    </div>
+
+  </div>
+
+</nav>
+
 
 <div class="sidebar__area" [class.sidebar-opened]="showSidebar">
   <div class="sidebar__wrapper">

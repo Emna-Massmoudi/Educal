@@ -1,82 +1,51 @@
 <!-- wrapper inline force overflow hidden sur l'element host Angular -->
 <div class="student-layout">
 
-  <!-- ── NAVBAR ── -->
-  <nav class="navbar">
-    <div class="navbar-inner">
+ <nav class="navbar">
 
-      <a class="navbar-brand" routerLink="/home" title="Retour à l'accueil">
+  <div class="navbar-inner">
+
+    <!-- LEFT -->
+    <div class="navbar-left">
+      <a class="brand-link" routerLink="/home">
         <div class="logo-icon">🎓</div>
-        <span>Educal</span>
+        <span class="brand-text">EduCal</span>
+      </a>
+    </div>
+
+    <!-- CENTER -->
+    <div class="navbar-center">
+
+      <a class="nav-item"
+         [class.active]="section === 'dashboard'"
+         (click)="section = 'dashboard'">
+        Dashboard
       </a>
 
-      <div class="navbar-links">
-        <a class="nav-item" [class.active]="section === 'dashboard'" (click)="section = 'dashboard'">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
-            <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
-            <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
-            <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
-          </svg>
-          Tableau de bord
-        </a>
+      <a class="nav-item"
+         [class.active]="section === 'mesCours'"
+         (click)="section = 'mesCours'">
+        Mes cours
+        <span class="nav-count">{{ mesCours.length }}</span>
+      </a>
 
-       
-
-        <a class="nav-item" [class.active]="section === 'mesCours'" (click)="section = 'mesCours'">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-            <path d="M2 17L12 22L22 17M2 12L12 17L22 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          Mes cours
-          <span class="nav-count">{{ mesCours.length }}</span>
-        </a>
-
-        <a class="nav-item" [class.active]="section === 'profil'" (click)="section = 'profil'">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
-            <path d="M4 20c0-3.31 3.58-6 8-6s8 2.69 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          Mon profil
-        </a>
-      </div>
-
-      <div class="navbar-end">
-        <div class="navbar-user">
-          <div class="user-avatar">{{ initiales }}</div>
-          <div class="user-info">
-            <div class="user-name">{{ nomEtudiant }}</div>
-            <div class="user-email">{{ emailEtudiant }}</div>
-          </div>
-        </div>
-        <button class="btn-logout" (click)="logout()" title="Déconnexion">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"
-                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </button>
-        <button class="navbar-hamburger" (click)="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
+      <a class="nav-item"
+         [class.active]="section === 'profil'"
+         (click)="section = 'profil'">
+        Profil
+      </a>
 
     </div>
 
-    <!-- Menu mobile -->
-    <div class="navbar-mobile" [class.open]="mobileMenuOpen">
-      <a class="nav-item-mobile" [class.active]="section === 'dashboard'"
-         (click)="section='dashboard'; mobileMenuOpen=false">Tableau de bord</a>
-      
-      <a class="nav-item-mobile" [class.active]="section === 'mesCours'"
-         (click)="section='mesCours'; mobileMenuOpen=false">
-        Mes cours <span class="nav-count">{{ mesCours.length }}</span>
-      </a>
-      <a class="nav-item-mobile" [class.active]="section === 'profil'"
-         (click)="section='profil'; mobileMenuOpen=false">Mon profil</a>
+    <!-- RIGHT -->
+    <div class="navbar-right">
+      <div class="user-avatar">{{ initialesStudent }}</div>
+      <button class="btn-logout" (click)="logout()">Déconnexion</button>
     </div>
-  </nav>
+
+  </div>
+
+</nav>
 
   <!-- main avec overflow force -->
   <main class="main-content">
@@ -816,7 +785,7 @@
       <!-- LOGO -->
       <div class="col">
         <div class="footer__widget">
-          <h3 class="footer__widget-title">EduNet</h3>
+          <h3 class="footer__widget-title">Educal</h3>
           <div class="footer__widget-body">
             <p>Plateforme moderne pour apprendre et progresser.</p>
           </div>
@@ -864,7 +833,7 @@
         <div class="footer__widget">
           <h3 class="footer__widget-title">Contact</h3>
           <div class="footer__widget-body">
-            <p>Email: contact@edunet.com</p>
+            <p>Email: contact@educal.com</p>
             <p>Tel: +216 00 000 000</p>
           </div>
         </div>
@@ -877,7 +846,7 @@
   <div class="footer__bottom">
     <div class="container">
       <div class="footer__copyright text-center">
-        <p>© 2026 EduNet. Tous droits réservés.</p>
+        <p>© 2026 Educal. Tous droits réservés.</p>
       </div>
     </div>
   </div>

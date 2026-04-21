@@ -1,9 +1,12 @@
 <!-- NAVBAR PROPRE -->
 <nav class="navbar">
   <div class="navbar-left">
-    <div class="logo-icon">🎓</div>
-    <span class="brand-text">EduCal</span>
-  </div>
+  <div class="logo-icon">🎓</div>
+
+  <a class="brand-text" routerLink="/home">
+    Educal
+  </a>
+</div>
 
   <div class="navbar-center">
     <a class="nav-item" [class.active]="activeSection === 'formations'" (click)="activeSection = 'formations'">
@@ -684,4 +687,53 @@
       </div>
     </div>
   </main>
+  <ng-container *ngTemplateOutlet="authFooter"></ng-container>
+<ng-template #authFooter>
+<footer class="footer">
 
+  <div class="footer-container">
+
+    <!-- LOGO -->
+    
+        <div class="col">
+          <div class="footer__widget">
+            <h3 class="footer__widget-title">Educal</h3>
+            <div class="footer__widget-body">
+              <p>Plateforme moderne pour apprendre et progresser.</p>
+            </div>
+
+            <div class="footer__social">
+              <ul>
+                <li><a href="#">F</a></li>
+                <li><a href="#" class="tw">T</a></li>
+                <li><a href="#" class="pin">P</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+    <!-- NAVIGATION -->
+    <div class="footer-col">
+      <h3 class="footer-title">Navigation</h3>
+
+      <a (click)="activeSection='formations'">Mes formations</a>
+      <a (click)="activeSection='etudiants'">Étudiants</a>
+      <a (click)="activeSection='quiz'">Quiz</a>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="footer-col">
+      <h3 class="footer-title">Contact</h3>
+      <p>Email: contact@educal.com</p>
+      <p>Tel: +216 00 000 000</p>
+    </div>
+
+  </div>
+
+  <!-- ✅ AJOUT IMPORTANT -->
+  <div class="footer-bottom">
+    © {{ currentYear }} EduCal. Tous droits réservés.
+  </div>
+
+</footer>
+</ng-template>

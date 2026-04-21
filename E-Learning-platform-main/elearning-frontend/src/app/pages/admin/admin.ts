@@ -1,7 +1,7 @@
 // cSpell:ignore formateur etudiant categorie
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router ,RouterModule} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -29,6 +29,7 @@ import { AdminPaiements }   from '../admin-paiements/admin-paiements';
     Courses,
     AdminBloques,
     AdminPaiements,
+    RouterModule,
   ],
 })
 export class Admin implements OnInit {

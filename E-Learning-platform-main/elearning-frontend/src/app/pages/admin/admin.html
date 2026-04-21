@@ -1,30 +1,60 @@
 <div class="admin-layout">
 
   <!-- ── MOBILE TOPBAR ── -->
-  <nav class="navbar">
+  
+<nav class="navbar">
+  
   <!-- LEFT -->
-  <div class="navbar-left">
-    <div class="logo-icon">🎓</div>
-    <span class="brand-text">EduCal</span>
-  </div>
+  <a class="navbar-left brand-link" routerLink="/home">
+  <div class="logo-icon">🎓</div>
+  <span class="brand-text">EduCal</span>
+</a>
 
   <!-- CENTER -->
   <div class="navbar-center">
-    <a class="nav-item" [class.active]="section === 'dashboard'" (click)="setSection('dashboard')">
+
+    <a class="nav-item"
+       [class.active]="section === 'dashboard'"
+       (click)="setSection('dashboard')">
       Dashboard
     </a>
 
-    <a class="nav-item" [class.active]="section === 'Formateurs'" (click)="setSection('Formateurs')">
+    <a class="nav-item"
+       [class.active]="section === 'Formateurs'"
+       (click)="setSection('Formateurs')">
       Formateurs
     </a>
 
-    <a class="nav-item" [class.active]="section === 'etudiants'" (click)="setSection('etudiants')">
+    <a class="nav-item"
+       [class.active]="section === 'etudiants'"
+       (click)="setSection('etudiants')">
       Étudiants
     </a>
 
-    <a class="nav-item" [class.active]="section === 'cours'" (click)="setSection('cours')">
+    <a class="nav-item"
+       [class.active]="section === 'cours'"
+       (click)="setSection('cours')">
       Formations
     </a>
+
+    <a class="nav-item"
+       [class.active]="section === 'paiements'"
+       (click)="setSection('paiements')">
+      Paiements
+    </a>
+
+    <a class="nav-item"
+       [class.active]="section === 'categories'"
+       (click)="setSection('categories')">
+      Catégories
+    </a>
+
+    <a class="nav-item"
+       [class.active]="section === 'blocked'"
+       (click)="setSection('blocked')">
+      Bloqués
+    </a>
+
   </div>
 
   <!-- RIGHT -->
@@ -35,8 +65,8 @@
       Déconnexion
     </button>
   </div>
-</nav>
 
+</nav>
   <!-- ── MAIN ── -->
   <main class="main-content">
     <app-admin-dashboard  *ngIf="section === 'dashboard'"></app-admin-dashboard>

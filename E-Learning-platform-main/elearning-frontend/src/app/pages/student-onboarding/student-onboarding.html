@@ -1,0 +1,43 @@
+<app-page-hero
+  title="Personnalise ton parcours"
+  eyebrow="Onboarding"
+  subtitle="Choisis les sujets que tu veux apprendre pour recevoir des recommandations plus pertinentes."
+></app-page-hero>
+
+<section class="student-onboarding">
+  <div class="container">
+    <div class="student-onboarding__card">
+      <div class="student-onboarding__header">
+        <h2>Quels domaines t'interessent ?</h2>
+        <p>
+          Ces preferences serviront a mieux organiser la page etudiant, les recommandations
+          et les formations disponibles dans ton espace.
+        </p>
+      </div>
+
+      <div *ngIf="loading" class="student-onboarding__state">
+        Chargement des categories...
+      </div>
+
+      <div *ngIf="!loading" class="student-onboarding__grid">
+        <button
+          *ngFor="let category of categories"
+          type="button"
+          class="interest-chip"
+          [class.is-selected]="isSelected(category.nom)"
+          (click)="toggleInterest(category.nom)"
+        >
+          <span>{{ category.nom }}</span>
+          <small>{{ category.description || 'Categorie disponible sur la plateforme.' }}</small>
+        </button>
+      </div>
+
+      <div class="student-onboarding__footer">
+        <button type="button" class="btn-secondary" (click)="skip()">Passer</button>
+        <button type="button" class="btn-primary" (click)="savePreferences()" [disabled]="saving">
+          {{ saving ? 'Enregistrement...' : 'Continuer vers l accueil' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

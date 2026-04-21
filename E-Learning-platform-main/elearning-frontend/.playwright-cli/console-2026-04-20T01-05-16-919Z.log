@@ -1,0 +1,7 @@
+[    1099ms] [LOG] Angular is running in development mode. @ http://127.0.0.1:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-HMGNABYI.js?v=07177121:14338
+[    1150ms] [LOG] Interceptor ok, token: null @ http://127.0.0.1:4200/main.js:39869
+[    1156ms] [LOG] Interceptor ok, token: null @ http://127.0.0.1:4200/main.js:39869
+[    1319ms] [ERROR] Access to fetch at 'http://localhost:8081/api/cours/public/published' from origin 'http://127.0.0.1:4200' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://127.0.0.1:4200/home:0
+[    1322ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8081/api/cours/public/published:0
+[    1329ms] [ERROR] Access to fetch at 'http://localhost:8081/api/categories/public' from origin 'http://127.0.0.1:4200' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://127.0.0.1:4200/home:0
+[    1329ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8081/api/categories/public:0

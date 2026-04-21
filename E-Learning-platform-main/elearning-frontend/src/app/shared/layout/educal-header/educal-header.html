@@ -1,0 +1,127 @@
+<header>
+  <div
+    id="header-sticky"
+    [ngClass]="headerSticky
+      ? 'header__area header__padding-2 header__shadow sticky public-header'
+      : 'header__area header__padding-2 header__shadow public-header'"
+  >
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-xl-3 col-lg-4 col-md-6 col-8">
+          <div class="header__left d-flex align-items-center">
+            <div class="logo">
+              <a [routerLink]="['/home']" class="brand-link">
+  <div class="logo-icon">🎓</div>
+  <span class="brand-text">Educal</span>
+</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-9 col-lg-8 col-md-6 col-4">
+          <div class="header__right d-flex justify-content-end align-items-center">
+            <div class="main-menu main-menu-2">
+              <nav class="d-none d-xl-block">
+                <ul>
+                  <li><a [routerLink]="['/home']" [class.is-active]="isNavItemActive('/home')">Accueil</a></li>
+                  <li><a [routerLink]="['/home']" fragment="categories" [class.is-active]="isNavItemActive('/home', 'categories')">Categories</a></li>
+                  <li><a [routerLink]="['/home']" fragment="courses" [class.is-active]="isNavItemActive('/home', 'courses')">Cours</a></li>
+                  
+                  <li><a [routerLink]="['/home']" fragment="features" [class.is-active]="isNavItemActive('/home', 'features')">Pourquoi Educal</a></li>
+                </ul>
+              </nav>
+            </div>
+
+            <div class="header__btn header__btn-2 ml-30 d-none d-sm-block" *ngIf="!isAuthenticated">
+              <a [routerLink]="['/login']" class="e-btn">Connexion</a>
+            </div>
+
+            <div *ngIf="isAuthenticated" class="public-header__account d-none d-sm-flex">
+              <div class="public-header__profile">
+                <div class="public-header__avatar">{{ userInitials }}</div>
+                <div class="public-header__identity">
+                  <strong>{{ displayName }}</strong>
+                  <span>{{ roleLabel }}</span>
+                </div>
+              </div>
+
+              <a [routerLink]="[dashboardRoute]" class="e-btn public-header__dashboard">
+                {{ dashboardLabel }}
+              </a>
+
+              <button type="button" class="e-btn e-btn-border public-header__logout" (click)="logout()">
+                Deconnexion
+              </button>
+            </div>
+
+            <div class="sidebar__menu d-xl-none">
+              <button
+                type="button"
+                class="sidebar-toggle-btn ml-30"
+                (click)="toggleSidebar()"
+                aria-label="Ouvrir le menu"
+              >
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar__area" [class.sidebar-opened]="showSidebar">
+  <div class="sidebar__wrapper">
+    <div class="sidebar__close">
+      <button type="button" class="sidebar__close-btn" (click)="closeSidebar()">
+        <span><i class="fal fa-times"></i></span>
+        <span>close</span>
+      </button>
+    </div>
+
+    <div class="sidebar__content">
+      <div class="logo mb-40">
+        <a [routerLink]="['/home']" class="brand-link">
+          <img src="assets/img/logo/logo.png" alt="Educal" />
+        </a>
+      </div>
+
+      <nav class="public-mobile-nav">
+        <a [routerLink]="['/home']" [class.is-active]="isNavItemActive('/home')">Accueil</a>
+        <a [routerLink]="['/home']" fragment="categories" [class.is-active]="isNavItemActive('/home', 'categories')">Categories</a>
+        <a [routerLink]="['/home']" fragment="courses" [class.is-active]="isNavItemActive('/home', 'courses')">Cours</a>
+        <a *ngIf="shouldShowTeacherCta" [routerLink]="[teacherRoute]" [class.is-active]="isTeacherCtaActive()">Devenir formateur</a>
+        <a [routerLink]="['/home']" fragment="features" [class.is-active]="isNavItemActive('/home', 'features')">Pourquoi Educal</a>
+        <a *ngIf="!isAuthenticated" [routerLink]="['/login']">Connexion</a>
+        <a *ngIf="!isAuthenticated" [routerLink]="['/register']">Creer un compte</a>
+        <a *ngIf="isAuthenticated" [routerLink]="[dashboardRoute]">{{ dashboardLabel }}</a>
+      </nav>
+
+      <div *ngIf="isAuthenticated" class="public-mobile-account mt-30">
+        <div class="public-header__profile">
+          <div class="public-header__avatar">{{ userInitials }}</div>
+          <div class="public-header__identity">
+            <strong>{{ displayName }}</strong>
+            <span>{{ roleLabel }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="public-mobile-actions mt-30">
+        <button
+          *ngIf="isAuthenticated"
+          type="button"
+          class="e-btn e-btn-border public-header__logout w-100"
+          (click)="logout()"
+        >
+          Deconnexion
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="body-overlay" [class.opened]="showSidebar" (click)="closeSidebar()"></div>

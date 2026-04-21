@@ -1,0 +1,971 @@
+<!-- wrapper inline force overflow hidden sur l'element host Angular -->
+<div class="student-layout">
+
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+
+      <a class="navbar-brand" routerLink="/home" title="Retour à l'accueil">
+        <div class="logo-icon">🎓</div>
+        <span>Educal</span>
+      </a>
+
+      <div class="navbar-links">
+        <a class="nav-item" [class.active]="section === 'dashboard'" (click)="section = 'dashboard'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+          Tableau de bord
+        </a>
+
+       
+
+        <a class="nav-item" [class.active]="section === 'mesCours'" (click)="section = 'mesCours'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17M2 12L12 17L22 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          Mes cours
+          <span class="nav-count">{{ mesCours.length }}</span>
+        </a>
+
+        <a class="nav-item" [class.active]="section === 'profil'" (click)="section = 'profil'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M4 20c0-3.31 3.58-6 8-6s8 2.69 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          Mon profil
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-user">
+          <div class="user-avatar">{{ initiales }}</div>
+          <div class="user-info">
+            <div class="user-name">{{ nomEtudiant }}</div>
+            <div class="user-email">{{ emailEtudiant }}</div>
+          </div>
+        </div>
+        <button class="btn-logout" (click)="logout()" title="Déconnexion">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="navbar-hamburger" (click)="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Menu mobile -->
+    <div class="navbar-mobile" [class.open]="mobileMenuOpen">
+      <a class="nav-item-mobile" [class.active]="section === 'dashboard'"
+         (click)="section='dashboard'; mobileMenuOpen=false">Tableau de bord</a>
+      
+      <a class="nav-item-mobile" [class.active]="section === 'mesCours'"
+         (click)="section='mesCours'; mobileMenuOpen=false">
+        Mes cours <span class="nav-count">{{ mesCours.length }}</span>
+      </a>
+      <a class="nav-item-mobile" [class.active]="section === 'profil'"
+         (click)="section='profil'; mobileMenuOpen=false">Mon profil</a>
+    </div>
+  </nav>
+
+  <!-- main avec overflow force -->
+  <main class="main-content">
+
+    <div *ngIf="pageFeedbackMessage" class="app-alert" [ngClass]="'app-alert--' + pageFeedbackTone">
+      <span class="app-alert__icon">{{ pageFeedbackTone === 'success' ? 'OK' : pageFeedbackTone === 'error' ? '!' : 'i' }}</span>
+      <div class="app-alert__content">
+        <p class="app-alert__title">Espace etudiant</p>
+        <p class="app-alert__text">{{ pageFeedbackMessage }}</p>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <ng-container *ngIf="section === 'dashboard'">
+      <div class="page-header">
+        <div>
+          <h1>Bonjour, {{ nomEtudiant }}</h1>
+          <p class="page-sub">Un espace etudiant plus clair, plus utile et guide par tes centres d'interet.</p>
+        </div>
+      </div>
+
+      <div *ngIf="dashboardLoading" class="state-box">
+        <div class="spinner"></div>
+        <span>Preparation de ton espace...</span>
+      </div>
+
+      <div *ngIf="!dashboardLoading && (catalogueError || mesCoursError)" class="app-alert app-alert--error">
+        <span class="app-alert__icon">!</span>
+        <div class="app-alert__content">
+          <p class="app-alert__title">Certaines donnees sont indisponibles</p>
+          <p class="app-alert__text">{{ catalogueError || mesCoursError }}</p>
+          <div class="app-alert__actions">
+            <button type="button" class="app-alert__action" (click)="retryDashboardData()">Reessayer</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI : auto-fit pour éviter tout débordement -->
+      <div class="kpi-grid">
+        <div class="kpi-card" style="--kpi-color:#2b4eff;--kpi-light:#eef2ff">
+          <div class="kpi-icon">📚</div>
+          <div class="kpi-val">{{ totalInscrits }}</div>
+          <div class="kpi-lbl">Inscriptions</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#10b981;--kpi-light:#d1fae5">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-val">{{ coursActifs }}</div>
+          <div class="kpi-lbl">Cours actifs</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#f59e0b;--kpi-light:#fef3c7">
+          <div class="kpi-icon">⏳</div>
+          <div class="kpi-val">{{ coursEnAttente }}</div>
+          <div class="kpi-lbl">En attente</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#14b8a6;--kpi-light:#ccfbf1">
+          <div class="kpi-icon">🌟</div>
+          <div class="kpi-val">{{ recommendedCount }}</div>
+          <div class="kpi-lbl">Recommandees</div>
+        </div>
+      </div>
+
+      <div *ngIf="earnedCertificates.length > 0" class="certificat-card">
+        <div class="cert-icon">🏆</div>
+        <div>
+          <div class="cert-titre">Certificat disponible</div>
+          <div class="cert-sous">
+            {{ getCourseTitle(earnedCertificates[0].coursId) }} • delivre le {{ getCertificateDateLabel(earnedCertificates[0].coursId) }}
+          </div>
+        </div>
+        <button class="btn-cert" type="button"
+          (click)="openCertificate(earnedCertificates[0].coursId)"
+          [disabled]="isCertificateDownloading(earnedCertificates[0].coursId)">
+          {{ isCertificateDownloading(earnedCertificates[0].coursId) ? 'Telechargement...' : 'Telecharger le certificat' }}
+        </button>
+      </div>
+
+      <div class="section-card interests-card">
+        <div class="interests-card__head">
+          <div class="interests-card__intro">
+            <span class="interests-card__eyebrow">Personnalisation</span>
+            <h3>Mes centres d'interet</h3>
+            <p class="interests-card__lead">
+              {{ hasInterests ? 'Tes recommandations utilisent actuellement ces preferences pour prioriser les cours les plus pertinents.' : 'Choisis tes sujets preferes pour recevoir des suggestions plus ciblees dans ton espace etudiant.' }}
+            </p>
+          </div>
+          <button class="btn-link" (click)="goToInterests()">Mettre a jour →</button>
+        </div>
+        <div class="interests-card__stats">
+          <div class="interests-card__stat">
+            <strong>{{ interests.length }}</strong>
+            <span>interets actifs</span>
+          </div>
+          <div class="interests-card__stat">
+            <strong>{{ dashboardCourses.length }}</strong>
+            <span>suggestions rapides</span>
+          </div>
+        </div>
+        <div class="interests-card__body">
+          <div class="interests-copy">
+            <span class="interests-copy__label">Themes suivis</span>
+            <p>{{ hasInterests ? 'Ajuste tes preferences a tout moment pour affiner le catalogue recommande.' : 'Ajoute quelques sujets pour personnaliser ton tableau de bord et ton catalogue.' }}</p>
+          </div>
+          <div class="interest-pills">
+            <span *ngFor="let interest of interests" class="interest-pill">{{ interest }}</span>
+            <span *ngIf="!hasInterests" class="interest-pill interest-pill--muted">Aucun centre d interet defini</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card section-card--interactive" (click)="goToMyCourses()">
+        <div class="interests-card__head">
+          <h3>Mes dernieres inscriptions</h3>
+          <button class="btn-link" (click)="goToMyCourses(); $event.stopPropagation()">Voir tous mes cours →</button>
+        </div>
+
+        <div *ngIf="latestEnrollments.length === 0" class="home-empty-state">
+          Aucune inscription pour le moment. Ouvre le catalogue pour commencer.
+        </div>
+
+        <div *ngIf="latestEnrollments.length > 0" class="dash-cours-grid">
+          <div *ngFor="let item of latestEnrollments; let i = index"
+            class="cours-card"
+            [style.--delay]="i * 60 + 'ms'"
+            (click)="openLastEnrollment(item); $event.stopPropagation()">
+            <div class="card-banner" [style.background]="getBannerGradient(getCoursFromCatalogue(item.coursId)?.categorieId ?? 0)">
+              <img
+  *ngIf="getCoursFromCatalogue(item.coursId)?.imageUrl as img"
+  [src]="img.startsWith('http') ? img : 'http://localhost:8081' + img"
+  class="card-banner-img"
+  (error)="$any($event.target).style.display='none'"
+/>
+              <div class="card-emoji" [class.hidden]="getCoursFromCatalogue(item.coursId)?.imageUrl">
+                {{ getIcon(getCoursFromCatalogue(item.coursId)?.categorieNom ?? '') }}
+              </div>
+              <span class="badge-statut-card" [ngClass]="getStatutClass(item.statut)">
+                {{ getStatutLabel(item.statut) }}
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span *ngIf="getCoursFromCatalogue(item.coursId)?.categorieNom" class="chip-cat">{{ getCoursFromCatalogue(item.coursId)?.categorieNom }}</span>
+                <span *ngIf="getCoursFromCatalogue(item.coursId)?.sousCategorieNom" class="chip-sous">{{ getCoursFromCatalogue(item.coursId)?.sousCategorieNom }}</span>
+                <span *ngIf="getCoursFromCatalogue(item.coursId)?.niveau" class="chip-niveau">{{ getCoursFromCatalogue(item.coursId)?.niveau }}</span>
+              </div>
+              <h3 class="card-titre">{{ item.coursTitre }}</h3>
+              <p class="card-desc">{{ getCoursFromCatalogue(item.coursId)?.description || 'Aucune description.' }}</p>
+              <div class="card-formateur" *ngIf="getCoursFromCatalogue(item.coursId)?.formateurNom">
+                <div class="formateur-avatar">{{ getInitiales(getCoursFromCatalogue(item.coursId)?.formateurNom ?? '') }}</div>
+                <span>{{ getCoursFromCatalogue(item.coursId)?.formateurNom }}</span>
+              </div>
+              <div *ngIf="getCoursFromCatalogue(item.coursId)?.duree" class="card-duree">⏱ {{ getCoursFromCatalogue(item.coursId)?.duree }}</div>
+              <div *ngIf="item.statut === 'VALIDE'" class="dash-progress-wrap">
+                <div class="dash-progress-head">
+                  <span>{{ getCourseProgressLabel(item.coursId) }}</span>
+                  <span>{{ getCourseProgressPercent(item.coursId) }}%</span>
+                </div>
+                <div class="dash-progress-bar">
+                  <span [style.width.%]="getCourseProgressPercent(item.coursId)"></span>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="button" class="btn-card-secondary"
+                (click)="openCourseDetail(item.coursId); $event.stopPropagation()">Voir les details</button>
+              <button *ngIf="item.statut === 'VALIDE'" class="btn-inscrire"
+                (click)="reprendreCours(item); $event.stopPropagation()">
+                {{ isCourseCompleted(item.coursId) ? 'Revoir' : 'Reprendre' }} →
+              </button>
+              <span *ngIf="item.statut !== 'VALIDE'" class="statut-pill" [ngClass]="getStatutClass(item.statut)">
+                {{ getStatutLabel(item.statut) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card" *ngIf="dashboardCourses.length > 0">
+        <div class="interests-card__head">
+          <h3>Formations disponibles pour toi</h3>
+          <button class="btn-link" (click)="section = 'catalogue'">Voir tout le catalogue →</button>
+        </div>
+        <p class="interests-copy">Ces formations ne sont pas encore dans tes inscriptions et sont triees selon tes interets.</p>
+        <div class="dash-cours-grid">
+          <div *ngFor="let course of dashboardCourses; let i = index"
+            class="cours-card"
+            [style.--delay]="i * 60 + 'ms'">
+            <div class="card-banner" [style.background]="getBannerGradient(course.categorieId)">
+              <img
+                *ngIf="course.imageUrl"
+                [src]="course.imageUrl.startsWith('http') ? course.imageUrl : 'http://localhost:8081' + course.imageUrl"
+                class="card-banner-img"
+                (error)="$any($event.target).style.display='none'"
+              />
+              <div class="card-emoji" [class.hidden]="course.imageUrl">{{ getIcon(course.categorieNom) }}</div>
+              <span *ngIf="isInscrit(course.id)" class="badge-inscrit-card">Deja inscrit</span>
+            </div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="chip-cat">{{ course.categorieNom }}</span>
+                <span class="chip-sous" *ngIf="course.sousCategorieNom">{{ course.sousCategorieNom }}</span>
+                <span class="chip-niveau" *ngIf="course.niveau">{{ course.niveau }}</span>
+              </div>
+              <h3 class="card-titre">{{ course.titre }}</h3>
+              <p class="card-desc">{{ course.description || 'Aucune description.' }}</p>
+              <div class="card-formateur">
+                <div class="formateur-avatar">{{ getInitiales(course.formateurNom) }}</div>
+                <span>{{ course.formateurNom }}</span>
+              </div>
+              <div class="card-duree" *ngIf="course.duree">⏱ {{ course.duree }}</div>
+              <div class="course-price-pill course-price-pill--wide">{{ getPriceLabel(course) }}</div>
+            </div>
+            <div class="card-footer">
+              <button type="button" class="btn-card-secondary" (click)="openCourseDetail(course.id)">Voir les details</button>
+              <button type="button" class="btn-inscrire" (click)="ouvrirConfirmInscrit(course)">
+                {{ getInscriptionButtonLabel(course) }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ── CATALOGUE ── -->
+    <ng-container *ngIf="section === 'catalogue'">
+      <div class="page-header">
+        <div>
+          <h1>Catalogue des formations</h1>
+          <p class="page-sub">{{ filteredCatalogue().length }} resultat(s) sur {{ catalogue.length }} formation(s) publiee(s)</p>
+        </div>
+      </div>
+
+      <div *ngIf="catalogueLoading" class="state-box">
+        <div class="spinner"></div>
+        <span>Chargement du catalogue...</span>
+      </div>
+
+      <div *ngIf="!catalogueLoading && catalogueError" class="app-alert app-alert--error">
+        <span class="app-alert__icon">!</span>
+        <div class="app-alert__content">
+          <p class="app-alert__title">Catalogue indisponible</p>
+          <p class="app-alert__text">{{ catalogueError }}</p>
+          <div class="app-alert__actions">
+            <button type="button" class="app-alert__action" (click)="retryCatalogue()">Reessayer le catalogue</button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="inscriptionSuccess" class="app-alert app-alert--success">
+        <span class="app-alert__icon">OK</span>
+        <div class="app-alert__content">
+          <p class="app-alert__title">Inscription envoyee</p>
+          <p class="app-alert__text">{{ inscriptionSuccess }}</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+            <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input type="text" class="search-input" [(ngModel)]="searchQuery"
+            placeholder="Rechercher une formation, une categorie ou un formateur..." />
+          <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery = ''">✕</button>
+        </div>
+        <select class="filter-select" [(ngModel)]="filterCat">
+          <option value="">Toutes categories</option>
+          <option *ngFor="let category of getCategories()" [value]="category">{{ category }}</option>
+        </select>
+      </div>
+
+      <div class="cours-grid" *ngIf="!catalogueLoading && !catalogueError && filteredCatalogue().length > 0">
+        <div *ngFor="let course of filteredCatalogue(); let i = index" class="cours-card" [style.--delay]="i * 60 + 'ms'">
+          <div class="card-banner" [style.background]="getBannerGradient(course.categorieId)">
+            <img *ngIf="course.imageUrl"
+              [src]="course.imageUrl.startsWith('http') ? course.imageUrl : 'http://localhost:8081' + course.imageUrl"
+              class="card-banner-img" (error)="$any($event.target).style.display='none'" />
+            <div class="card-emoji" [class.hidden]="course.imageUrl">{{ getIcon(course.categorieNom) }}</div>
+            <span *ngIf="isInscrit(course.id)" class="badge-inscrit-card">Deja inscrit</span>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="chip-cat">{{ course.categorieNom }}</span>
+              <span class="chip-sous" *ngIf="course.sousCategorieNom">{{ course.sousCategorieNom }}</span>
+              <span class="chip-niveau" *ngIf="course.niveau">{{ course.niveau }}</span>
+            </div>
+            <h3 class="card-titre">{{ course.titre }}</h3>
+            <p class="card-desc">{{ course.description || 'Aucune description.' }}</p>
+            <div class="card-formateur">
+              <div class="formateur-avatar">{{ getInitiales(course.formateurNom) }}</div>
+              <span>{{ course.formateurNom }}</span>
+            </div>
+            <div class="card-duree" *ngIf="course.duree">⏱ {{ course.duree }}</div>
+            <div class="course-price-pill course-price-pill--wide">{{ getPriceLabel(course) }}</div>
+          </div>
+          <div class="card-footer">
+            <button type="button" class="btn-card-secondary" (click)="openCourseDetail(course.id)">Voir les details</button>
+            <button type="button" class="btn-inscrire" (click)="handleCataloguePrimaryAction(course)">
+              {{ getCataloguePrimaryLabel(course) }}
+            </button>
+          </div>
+          <div *ngIf="isInscrit(course.id)" class="already-inscrit">
+            {{ canContinueCourse(course.id) ? getCourseProgressMeta(course.id) : 'Deja dans tes inscriptions' }}
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!catalogueLoading && !catalogueError && filteredCatalogue().length === 0" class="empty-state">
+        <div class="empty-emoji">🔍</div>
+        <h3>Aucun resultat</h3>
+        <p>Essaie une autre recherche ou enlève le filtre de categorie.</p>
+      </div>
+    </ng-container>
+
+   <!-- ── MES COURS ── -->
+<ng-container *ngIf="section === 'mesCours'">
+
+  <div class="page-header">
+    <div>
+      <h1>Mes cours</h1>
+      <p class="page-sub">{{ mesCours.length }} inscription(s) enregistree(s)</p>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="mesCoursLoading" class="state-box">
+    <div class="spinner"></div>
+    <span>Chargement de tes cours...</span>
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="!mesCoursLoading && mesCoursError" class="app-alert app-alert--error">
+    <span class="app-alert__icon">!</span>
+    <div class="app-alert__content">
+      <p class="app-alert__title">Erreur</p>
+      <p class="app-alert__text">{{ mesCoursError }}</p>
+    </div>
+  </div>
+
+  <!-- EMPTY -->
+  <div *ngIf="!mesCoursLoading && mesCours.length === 0" class="home-empty-state">
+    Aucun cours inscrit pour le moment.
+  </div>
+
+  <!-- ✅ GRID STYLE CATALOGUE -->
+  <div class="cours-grid" *ngIf="!mesCoursLoading && mesCours.length > 0">
+
+    <div *ngFor="let item of mesCours; let i = index"
+         class="cours-card"
+         [style.--delay]="i * 60 + 'ms'">
+
+      <!-- IMAGE -->
+      <div class="card-banner"
+           [style.background]="getBannerGradient(getCoursFromCatalogue(item.coursId)?.categorieId ?? 0)">
+
+        <img
+          *ngIf="getSafeImageUrl(item.coursId) as img"
+          [src]="img"
+          class="card-banner-img"
+          (error)="$any($event.target).style.display='none'"
+        />
+
+        <div class="card-emoji"
+             [class.hidden]="getCoursFromCatalogue(item.coursId)?.imageUrl">
+          {{ getIcon(getCoursFromCatalogue(item.coursId)?.categorieNom ?? '') }}
+        </div>
+
+        <span class="badge-statut-card"
+              [ngClass]="getStatutClass(item.statut)">
+          {{ getStatutLabel(item.statut) }}
+        </span>
+
+      </div>
+
+      <!-- BODY -->
+      <div class="card-body">
+
+        <div class="card-meta">
+          <span class="chip-cat">
+            {{ getCoursFromCatalogue(item.coursId)?.categorieNom }}
+          </span>
+
+          <span *ngIf="getCoursFromCatalogue(item.coursId)?.niveau"
+                class="chip-niveau">
+            {{ getCoursFromCatalogue(item.coursId)?.niveau }}
+          </span>
+        </div>
+
+        <h3 class="card-titre">{{ item.coursTitre }}</h3>
+
+        <p class="card-desc">
+          {{ getCoursFromCatalogue(item.coursId)?.description || 'Aucune description.' }}
+        </p>
+
+        <div class="card-formateur"
+             *ngIf="getCoursFromCatalogue(item.coursId)?.formateurNom">
+          <div class="formateur-avatar">
+            {{ getInitiales(getCoursFromCatalogue(item.coursId)?.formateurNom ?? '') }}
+          </div>
+          <span>
+            {{ getCoursFromCatalogue(item.coursId)?.formateurNom }}
+          </span>
+        </div>
+
+        <div *ngIf="getCoursFromCatalogue(item.coursId)?.duree"
+             class="card-duree">
+          ⏱ {{ getCoursFromCatalogue(item.coursId)?.duree }}
+        </div>
+
+        <!-- PROGRESS -->
+        <div *ngIf="item.statut === 'VALIDE'" class="dash-progress-wrap">
+          <div class="dash-progress-head">
+            <span>Progression</span>
+            <span>{{ getCourseProgressPercent(item.coursId) }}%</span>
+          </div>
+
+          <div class="dash-progress-bar">
+            <span [style.width.%]="getCourseProgressPercent(item.coursId)"></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="card-footer">
+
+        <button class="btn-card-secondary"
+                (click)="openCourseDetail(item.coursId)">
+          Voir les details
+        </button>
+
+        <button *ngIf="item.statut === 'VALIDE'"
+                class="btn-inscrire"
+                (click)="reprendreCours(item)">
+          {{ isCourseCompleted(item.coursId) ? 'Revoir' : 'Reprendre' }} →
+        </button>
+
+        <span *ngIf="item.statut !== 'VALIDE'"
+              class="statut-pill"
+              [ngClass]="getStatutClass(item.statut)">
+          {{ getStatutLabel(item.statut) }}
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ng-container>
+
+    <!-- ── PROFIL ── -->
+    <ng-container *ngIf="section === 'profil'">
+      <div class="page-header">
+        <div>
+          <h1>Mon profil</h1>
+          <p class="page-sub">Tes informations et tes preferences d'apprentissage.</p>
+        </div>
+      </div>
+
+      <div class="profil-card">
+        <div class="profil-hero">
+          <div class="profil-avatar">{{ initiales }}</div>
+          <div>
+            <h2>{{ nomEtudiant }}</h2>
+            <p>{{ emailEtudiant }}</p>
+            <span class="badge-role">Etudiant</span>
+          </div>
+        </div>
+        <div class="profil-stats">
+          <div class="profil-stat">
+            <div class="profil-stat-val">{{ totalInscrits }}</div>
+            <div class="profil-stat-lbl">Inscriptions</div>
+          </div>
+          <div class="profil-stat">
+            <div class="profil-stat-val">{{ coursActifs }}</div>
+            <div class="profil-stat-lbl">Cours actifs</div>
+          </div>
+          <div class="profil-stat">
+            <div class="profil-stat-val">{{ recommendedCount }}</div>
+            <div class="profil-stat-lbl">Recommandees</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card interests-card profile-interests">
+        <div class="interests-card__head">
+          <div class="interests-card__intro">
+            <span class="interests-card__eyebrow">Preferences</span>
+            <h3>Centres d'interet</h3>
+            <p class="interests-card__lead">{{ hasInterests ? 'Ton profil apprend ce que tu veux approfondir pour mieux trier les suggestions et formations disponibles.' : 'Ajoute tes premiers centres d interet pour personnaliser ton experience d apprentissage.' }}</p>
+          </div>
+          <button class="btn-link" (click)="goToInterests()">Modifier →</button>
+        </div>
+        <div class="interests-card__stats">
+          <div class="interests-card__stat">
+            <strong>{{ interests.length }}</strong>
+            <span>preferences</span>
+          </div>
+          <div class="interests-card__stat">
+            <strong>{{ recommendedCount }}</strong>
+            <span>cours a explorer</span>
+          </div>
+        </div>
+        <div class="interests-card__body">
+          <div class="interests-copy">
+            <span class="interests-copy__label">Resume actuel</span>
+            <p>{{ getInterestLabel() }}</p>
+          </div>
+          <div class="interest-pills">
+            <span *ngFor="let interest of interests" class="interest-pill">{{ interest }}</span>
+            <span *ngIf="!hasInterests" class="interest-pill interest-pill--muted">Aucun centre d interet defini</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ── COURS ACTIF ── -->
+    <ng-container *ngIf="section === 'cours' && coursActif">
+      <div class="cours-breadcrumb" style="margin-bottom:16px">
+        <button class="btn-back" (click)="section = 'mesCours'">← Mes cours</button>
+        <span>/</span>
+        <span class="bc-titre">{{ coursActif.titre }}</span>
+      </div>
+
+      <div class="cours-layout">
+        <div class="lecons-sidebar">
+          <div class="lecons-sidebar-head"><h3>Lecons</h3></div>
+          <div *ngIf="leconLoading" class="state-mini">
+            <div class="spinner-sm"></div><span>Chargement...</span>
+          </div>
+          <div *ngIf="!leconLoading && lecons.length === 0" class="state-mini">Aucune lecon disponible</div>
+          <div class="lecons-nav" *ngIf="!leconLoading && lecons.length > 0">
+            <div *ngFor="let lesson of lecons" class="lecon-nav-item"
+              [class.active]="leconActive?.id === lesson.id" (click)="selectionnerLecon(lesson)">
+              <div class="lecon-ordre">{{ lesson.ordre }}</div>
+              <div class="lecon-nav-titre">{{ lesson.titre }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cours-main">
+          <div *ngIf="!leconActive" class="cours-welcome">
+            <div class="cours-banner" [style.background]="getBannerGradient(coursActif.categorieId)">
+              <div class="cours-banner-emoji">{{ getIcon(coursActif.categorieNom) }}</div>
+            </div>
+            <div class="cours-welcome-body">
+              <h2>{{ coursActif.titre }}</h2>
+              <p>{{ coursActif.description }}</p>
+              <div class="cours-meta-chips">
+                <span *ngIf="coursActif.duree" class="chip-info">⏱ {{ coursActif.duree }}</span>
+                <span *ngIf="coursActif.niveau" class="chip-info">🎯 {{ coursActif.niveau }}</span>
+                <span class="chip-info">📖 {{ lecons.length }} lecon(s)</span>
+              </div>
+
+              <div *ngIf="getCoursActifInscription() as activeInscription" class="cours-review-cta">
+                <div>
+                  <strong>{{ getAvisForCourse(activeInscription.coursId) ? 'Merci pour ton avis' : 'Partage ton avis' }}</strong>
+                  <p>{{ getAvisForCourse(activeInscription.coursId) ? 'Tu peux le modifier a tout moment.' : 'Aide les autres etudiants a choisir leur formation.' }}</p>
+                </div>
+                <button class="btn-avis" (click)="ouvrirAvis(activeInscription)">
+                  {{ getAvisForCourse(activeInscription.coursId) ? 'Modifier mon avis' : 'Donner un avis' }}
+                </button>
+              </div>
+
+              <div *ngIf="coursActif.videoUrl" class="media-section">
+                <h4>Video du cours</h4>
+                <div *ngIf="isYoutube(coursActif.videoUrl)" class="video-wrap">
+                  <iframe [src]="getYoutubeEmbed(coursActif.videoUrl)" frameborder="0" allowfullscreen class="video-iframe"></iframe>
+                </div>
+                <a *ngIf="!isYoutube(coursActif.videoUrl)" [href]="coursActif.videoUrl" target="_blank" class="media-link">Voir la video →</a>
+              </div>
+
+              <div *ngIf="coursActif.pdfUrl" class="media-section">
+                <h4>Support de cours</h4>
+                <div class="pdf-viewer-wrap">
+                  <iframe [src]="getPdfUrl(coursActif.pdfUrl)" class="pdf-viewer" frameborder="0"></iframe>
+                </div>
+              </div>
+
+              <button *ngIf="lecons.length > 0" class="btn-start" (click)="selectionnerLecon(lecons[0])">Commencer la premiere lecon →</button>
+            </div>
+          </div>
+
+          <div *ngIf="leconActive">
+            <div class="lecon-header">
+              <button class="btn-back-sm" (click)="retourLecons()">← Retour</button>
+              <div>
+                <h2>{{ leconActive.titre }}</h2>
+                <p *ngIf="leconActive.description" class="lecon-desc">{{ leconActive.description }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="leconActive.contenuHtml" class="lesson-rich-content" [innerHTML]="leconActive.contenuHtml"></div>
+
+            <div *ngIf="getLessonResources('VIDEO').length > 0" class="lesson-resource-group">
+              <h4>Videos de la lecon</h4>
+              <div class="lesson-video-grid">
+                <div *ngFor="let video of getLessonResources('VIDEO')" class="lesson-video-card">
+                  <div class="lesson-video-card__title">{{ video.nom }}</div>
+                  <div *ngIf="isYoutube(video.url)" class="video-wrap">
+                    <iframe [src]="getYoutubeEmbed(video.url)" frameborder="0" allowfullscreen class="video-iframe"></iframe>
+                  </div>
+                  <a *ngIf="!isYoutube(video.url)" [href]="video.url" target="_blank" class="media-link">Ouvrir la video</a>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="getLessonResources('IMAGE').length > 0" class="lesson-resource-group">
+              <h4>Images de la lecon</h4>
+              <div class="lesson-image-grid">
+                <figure *ngFor="let image of getLessonResources('IMAGE')" class="lesson-image-card">
+                  <img [src]="getAssetUrl(image.url)" [alt]="image.nom" class="lesson-image-card__img" />
+                  <figcaption>{{ image.nom }}</figcaption>
+                </figure>
+              </div>
+            </div>
+
+            <div *ngIf="getLessonResources('DOCUMENT').length > 0" class="lesson-resource-group">
+              <h4>Pieces jointes</h4>
+              <div class="lesson-document-list">
+                <div *ngFor="let document of getLessonResources('DOCUMENT')" class="lesson-document-card">
+                  <div class="lesson-document-card__meta">
+                    <strong>{{ document.nom }}</strong>
+                    <span>{{ isPdfDocument(document) ? 'PDF' : 'Fichier attache' }}</span>
+                  </div>
+                  <div *ngIf="isPdfDocument(document)" class="pdf-viewer-wrap">
+                    <iframe [src]="getPdfUrl(document.url)" class="pdf-viewer" frameborder="0"></iframe>
+                  </div>
+                  <a [href]="getAssetUrl(document.url)" target="_blank" class="btn-dl-pdf">Ouvrir le document</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="quiz-section">
+              <ng-container *ngIf="quizVue === 'liste'">
+                <div *ngIf="evaluations.length === 0" class="state-mini muted">Aucun quiz pour cette lecon.</div>
+                <div *ngIf="quizError" class="state-mini muted">{{ quizError }}</div>
+                <div class="quiz-cards" *ngIf="evaluations.length > 0">
+                  <div *ngFor="let evaluation of evaluations" class="quiz-card-student">
+                    <div class="quiz-card-left">
+                      <span class="quiz-type-badge" [class.examen]="evaluation.type === 'EXAMEN'">
+                        {{ evaluation.type === 'QUIZ' ? 'Quiz' : 'Examen' }}
+                      </span>
+                      <h4>{{ evaluation.titre }}</h4>
+                      <div class="quiz-infos">
+                        <span>❓ {{ evaluation.questionCount }} questions</span>
+                        <span>✅ Reussite : {{ evaluation.noteMin }}/{{ evaluation.noteMax }}</span>
+                        <span>⏱ {{ evaluation.questionCount * 2 }} min</span>
+                      </div>
+                      <div *ngIf="evaluation.derniereNote !== null && evaluation.derniereNote !== undefined" class="quiz-history">
+                        <span class="quiz-history__note">Note : {{ evaluation.derniereNote | number:'1.0-2' }}/{{ evaluation.noteMax }}</span>
+                        <span class="quiz-history__status" [class.quiz-history__status--success]="evaluation.derniereReussite">
+                          {{ evaluation.derniereReussite ? 'Valide' : 'A reprendre' }}
+                        </span>
+                        <span *ngIf="evaluation.nombreTentatives">Tentatives : {{ evaluation.nombreTentatives }}</span>
+                      </div>
+                    </div>
+                    <button class="btn-start-quiz" (click)="commencerQuiz(evaluation)">
+                      {{ evaluation.nombreTentatives ? 'Repasser' : 'Commencer' }} →
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="quizVue === 'passage'">
+                <div *ngIf="quizLoading" class="state-mini" style="padding:40px;justify-content:center">
+                  <div class="spinner-sm"></div>
+                  <span>Chargement du quiz...</span>
+                </div>
+                <div *ngIf="!quizLoading && evalActive" class="quiz-passage">
+                  <div class="quiz-pass-header">
+                    <div class="quiz-pass-titre">{{ evalActive.titre }}</div>
+                    <div class="quiz-timer" [class.danger]="timerDanger">{{ timerMin }}:{{ timerSec }}</div>
+                  </div>
+                  <div class="timer-bar">
+                    <div class="timer-fill" [style.width]="timerPct + '%'" [class.danger]="timerDanger"></div>
+                  </div>
+                  <div class="questions-quiz">
+                    <div *ngFor="let question of evalQuestions; let qi = index" class="q-card">
+                      <div class="q-num-label">Question {{ qi + 1 }} / {{ evalQuestionCount }}</div>
+                      <div class="q-enonce">{{ question.enonce }}</div>
+                      <div class="q-points-badge">{{ question.point }} pt(s)</div>
+                      <div class="choix-quiz">
+                        <div *ngFor="let choice of question.choix" class="choix-quiz-item"
+                          [class.selected]="getReponseChoisie(question.id) === choice.id"
+                          (click)="choisirReponse(question.id, choice.id)">
+                          <div class="choix-radio" [class.selected]="getReponseChoisie(question.id) === choice.id">
+                            <div class="choix-radio-inner" *ngIf="getReponseChoisie(question.id) === choice.id"></div>
+                          </div>
+                          <span>{{ choice.texte }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="quiz-pass-footer">
+                    <span class="reponses-count">{{ reponsesEtudiant.size }} / {{ evalQuestionCount }} reponses</span>
+                    <button class="btn-soumettre" (click)="soumettreQuiz()">Soumettre le quiz →</button>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="quizVue === 'resultat'">
+                <div class="quiz-resultat">
+                  <div *ngIf="quizReussi" class="resultat-success">
+                    <div class="resultat-emoji">🎉</div>
+                    <h3>Felicitations</h3>
+                    <p>Tu as reussi avec <strong>{{ scorePct }}%</strong> et une note de <strong>{{ noteObtenue | number:'1.0-2' }}/{{ noteMax }}</strong>.</p>
+                  </div>
+                  <div *ngIf="!quizReussi" class="resultat-fail">
+                    <div class="resultat-emoji">😕</div>
+                    <h3>Quiz non reussi</h3>
+                    <p>Tu as obtenu <strong>{{ scorePct }}%</strong> soit <strong>{{ noteObtenue | number:'1.0-2' }}/{{ noteMax }}</strong>.</p>
+                    <button class="btn-retry" (click)="recommencerQuiz()">Reessayer</button>
+                  </div>
+                  <div class="quiz-resultat__meta">
+                    <span>Score : {{ scoreObtenu }}/{{ scoreTotal }}</span>
+                    <span>Tentative : {{ tentativeNumero }}</span>
+                    <span *ngIf="derniereSoumission">Soumis le {{ derniereSoumission | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <button class="btn-back-quiz" (click)="retourQuizListe()">← Retour aux quiz</button>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </main>
+  <footer class="footer" style="background:#0e1133; padding-top:40px; margin-top:40px;">
+
+  <div class="container">
+
+    <div class="row">
+
+      <!-- LOGO -->
+      <div class="col">
+        <div class="footer__widget">
+          <h3 class="footer__widget-title">EduNet</h3>
+          <div class="footer__widget-body">
+            <p>Plateforme moderne pour apprendre et progresser.</p>
+          </div>
+
+          <div class="footer__social">
+            <ul>
+              <li><a href="#">F</a></li>
+              <li><a href="#" class="tw">T</a></li>
+              <li><a href="#" class="pin">P</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__link">
+  <ul>
+    <li>
+      <a href="javascript:void(0)" (click)="section='dashboard'">
+        Tableau de bord
+      </a>
+    </li>
+
+    <li>
+      <a href="javascript:void(0)" (click)="section='catalogue'">
+        Catalogue
+      </a>
+    </li>
+
+    <li>
+      <a href="javascript:void(0)" (click)="section='mesCours'">
+        Mes cours
+      </a>
+    </li>
+
+    <li>
+      <a href="javascript:void(0)" (click)="section='profil'">
+        Profil
+      </a>
+    </li>
+  </ul>
+</div>
+
+      <!-- CONTACT -->
+      <div class="col">
+        <div class="footer__widget">
+          <h3 class="footer__widget-title">Contact</h3>
+          <div class="footer__widget-body">
+            <p>Email: contact@edunet.com</p>
+            <p>Tel: +216 00 000 000</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container">
+      <div class="footer__copyright text-center">
+        <p>© 2026 EduNet. Tous droits réservés.</p>
+      </div>
+    </div>
+  </div>
+
+</footer>
+  
+</div>
+
+<!-- ── MODAL INSCRIPTION ── -->
+<div *ngIf="showConfirmInscrit" class="overlay" (click)="annulerConfirmInscrit()">
+  <div class="modal payment-modal" (click)="$event.stopPropagation()">
+    <div class="modal-icon">🎓</div>
+    <h3>{{ isPaidCourse(showConfirmInscrit) ? 'Finaliser le paiement' : "S'inscrire a cette formation ?" }}</h3>
+    <p><strong>{{ showConfirmInscrit.titre }}</strong><br><span class="modal-sub">par {{ showConfirmInscrit.formateurNom }}</span></p>
+    <div class="payment-summary">
+      <span>Montant</span>
+      <strong>{{ getPriceLabel(showConfirmInscrit) }}</strong>
+    </div>
+    <div *ngIf="!isPaidCourse(showConfirmInscrit)" class="modal-note">Ton inscription sera examinee</div>
+    <div *ngIf="isPaidCourse(showConfirmInscrit)" class="payment-options">
+      <button type="button" class="payment-option payment-option--disabled" disabled>
+        <span class="payment-option__title">Carte bancaire</span>
+        <span class="payment-option__meta">Bientot disponible</span>
+      </button>
+      <label class="payment-option payment-option--active">
+        <input type="radio" name="paymentMethod" value="code" [(ngModel)]="paymentMethod" />
+        <span>
+          <span class="payment-option__title">Code de paiement</span>
+          <span class="payment-option__meta">Apres transfert bancaire, saisis le code fourni.</span>
+        </span>
+      </label>
+      <div class="payment-code-field">
+        <label>Code de paiement</label>
+        <input type="text" [(ngModel)]="paymentCode" placeholder="Ex: PAY-2026-001" autocomplete="off" />
+      </div>
+      <div class="modal-note">L admin doit approuver ce code pour activer le cours.</div>
+    </div>
+    <div *ngIf="inscriptionError" class="modal-error">⚠️ {{ inscriptionError }}</div>
+    <div class="confirm-footer">
+      <button class="cf-cancel" (click)="annulerConfirmInscrit()">Annuler</button>
+      <button class="cf-confirm cf-inscrire" (click)="confirmerInscription()" [disabled]="inscriptionLoading">
+        <span class="btn-spinner" *ngIf="inscriptionLoading"></span>
+        {{ inscriptionLoading ? 'Envoi...' : (isPaidCourse(showConfirmInscrit) ? 'Envoyer le code' : "S'inscrire") }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL AVIS ── -->
+<div *ngIf="showAvisModal" class="overlay" (click)="fermerAvis()">
+  <div class="modal avis-modal" (click)="$event.stopPropagation()">
+    <div class="modal-icon">&#9733;</div>
+    <h3>{{ getAvisForCourse(showAvisModal.coursId) ? 'Modifier ton avis' : 'Donner ton avis' }}</h3>
+    <p><strong>{{ showAvisModal.coursTitre }}</strong></p>
+    <div class="avis-rating" role="group" aria-label="Note du cours">
+      <button type="button" *ngFor="let star of [1, 2, 3, 4, 5]" class="avis-star"
+        [class.active]="star <= avisNote" (click)="setAvisNote(star)"
+        [attr.aria-label]="star + ' sur 5'">&#9733;</button>
+    </div>
+    <label class="avis-label" for="avis-commentaire">Commentaire</label>
+    <textarea id="avis-commentaire" class="avis-textarea" [(ngModel)]="avisCommentaire"
+      maxlength="1000" rows="5"
+      placeholder="Explique ce que tu as aime, la qualite du contenu ou ce qui peut etre ameliore..."></textarea>
+    <div class="avis-count">{{ avisCommentaire.length }}/1000</div>
+    <div *ngIf="avisError" class="modal-error">{{ avisError }}</div>
+    <div class="confirm-footer">
+      <button class="cf-cancel" (click)="fermerAvis()">Annuler</button>
+      <button class="cf-confirm cf-inscrire" (click)="submitAvis()" [disabled]="avisSubmitting">
+        <span class="btn-spinner" *ngIf="avisSubmitting"></span>
+        {{ avisSubmitting ? 'Enregistrement...' : 'Publier mon avis' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ANNULATION ── -->
+<div *ngIf="showConfirmAnnuler" class="overlay" (click)="annulerConfirmAnnuler()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-icon">🚫</div>
+    <h3>Annuler cette inscription ?</h3>
+    <p><strong>{{ showConfirmAnnuler.coursTitre }}</strong></p>
+    <div class="modal-note warn">Cette action est irreversible</div>
+    <div class="confirm-footer">
+      <button class="cf-cancel" (click)="annulerConfirmAnnuler()">Garder</button>
+      <button class="cf-confirm cf-annuler" (click)="confirmerAnnulation()" [disabled]="inscriptionLoading">
+        <span class="btn-spinner" *ngIf="inscriptionLoading"></span>
+        {{ inscriptionLoading ? 'Annulation...' : 'Confirmer' }}
+      </button>
+    </div>
+  </div>
+</div>

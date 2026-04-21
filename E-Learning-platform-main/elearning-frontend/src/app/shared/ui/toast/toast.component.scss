@@ -1,0 +1,132 @@
+@use '../../../../theme/premium-tokens' as tokens;
+
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 320px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+  border-left: 4px solid transparent;
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1), fadeOut 0.3s ease-out 3.7s forwards;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12), 0 6px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  &--success {
+    border-left-color: tokens.$success-500;
+    .toast-icon { color: tokens.$success-500; }
+  }
+
+  &--error {
+    border-left-color: tokens.$danger-500;
+    .toast-icon { color: tokens.$danger-500; }
+  }
+
+  &--warning {
+    border-left-color: tokens.$accent-500;
+    .toast-icon { color: tokens.$accent-500; }
+  }
+
+  &--info {
+    border-left-color: tokens.$brand-500;
+    .toast-icon { color: tokens.$brand-500; }
+  }
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: tokens.$ink-900;
+  margin-bottom: 4px;
+}
+
+.toast-message {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: tokens.$muted-600;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: tokens.$muted-400;
+  cursor: pointer;
+  padding: 4px;
+  margin: -4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+
+  &:hover {
+    background-color: tokens.$muted-100;
+    color: tokens.$danger-500;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    align-items: center;
+  }
+  .toast {
+    width: 100%;
+    max-width: 340px;
+  }
+}

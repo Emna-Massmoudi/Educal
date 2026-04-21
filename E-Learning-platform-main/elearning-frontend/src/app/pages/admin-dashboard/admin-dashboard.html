@@ -1,0 +1,288 @@
+<div class="dashboard">
+  <div class="dash-header">
+    <div class="dash-header-left">
+      <div class="dash-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="7" height="7" rx="2" fill="white" fill-opacity=".9" />
+          <rect x="14" y="3" width="7" height="7" rx="2" fill="white" fill-opacity=".6" />
+          <rect x="3" y="14" width="7" height="7" rx="2" fill="white" fill-opacity=".6" />
+          <rect x="14" y="14" width="7" height="7" rx="2" fill="white" fill-opacity=".9" />
+        </svg>
+      </div>
+      <div>
+        <h1>Tableau de bord admin</h1>
+        <p class="dash-sub">Une vue metier claire sur les validations, paiements, certificats et performances.</p>
+      </div>
+    </div>
+    <div class="dash-date">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="4" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.8" />
+        <path d="M3 9H21M8 2V6M16 2V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+      {{ today }}
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="dash-loading">
+    <div class="loading-grid">
+      <div class="skeleton-card" *ngFor="let i of [1, 2, 3, 4, 5, 6]"></div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="table-card state-card">
+    <div class="table-empty">
+      <span>Impossible de charger le dashboard admin.</span>
+      <button type="button" class="retry-btn" (click)="retry()">Reessayer</button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!loading && !errorMessage">
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--kpi-color:#6366f1;--kpi-light:#eef2ff;animation-delay:.05s">
+        <div class="kpi-icon">CRS</div>
+        <div class="kpi-body">
+          <div class="kpi-val">{{ stats.totalCours }}</div>
+          <div class="kpi-lbl">Formations total</div>
+        </div>
+        <div class="kpi-trend up">+ {{ stats.coursPublies }} publiees</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#10b981;--kpi-light:#d1fae5;animation-delay:.1s">
+        <div class="kpi-icon">PUB</div>
+        <div class="kpi-body">
+          <div class="kpi-val">{{ publishedRate }}%</div>
+          <div class="kpi-lbl">Taux de publication</div>
+        </div>
+        <div class="kpi-bar">
+          <div class="kpi-bar-fill" [style.width.%]="publishedRate" style="background:#10b981"></div>
+        </div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#f59e0b;--kpi-light:#fef3c7;animation-delay:.15s">
+        <div class="kpi-icon">TODO</div>
+        <div class="kpi-body">
+          <div class="kpi-val">{{ pendingWorkCount }}</div>
+          <div class="kpi-lbl">Elements a traiter</div>
+        </div>
+        <div class="kpi-trend warn">Cours, paiements et candidatures</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#06b6d4;--kpi-light:#ecfeff;animation-delay:.2s">
+        <div class="kpi-icon">USR</div>
+        <div class="kpi-body">
+          <div class="kpi-val">{{ totalActiveUsers }}</div>
+          <div class="kpi-lbl">Utilisateurs actifs</div>
+        </div>
+        <div class="kpi-trend up">{{ stats.etudiantsActifs }} etudiants - {{ stats.formateursActifs }} formateurs</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#8b5cf6;--kpi-light:#f5f3ff;animation-delay:.25s">
+        <div class="kpi-icon">CRT</div>
+        <div class="kpi-body">
+          <div class="kpi-val">{{ stats.certificatsGeneres }}</div>
+          <div class="kpi-lbl">Certificats generes</div>
+        </div>
+        <div class="kpi-trend up">{{ stats.paiementsApprouves }} paiements approuves</div>
+      </div>
+
+      <div class="kpi-card kpi-revenue" style="animation-delay:.3s">
+        <div class="kpi-icon">REV</div>
+        <div class="kpi-body">
+          <div class="kpi-val">{{ formatMoney(stats.revenusPlateforme) }}</div>
+          <div class="kpi-lbl">Revenus plateforme</div>
+        </div>
+        <div class="kpi-trend up">{{ formatMoney(stats.revenusFormateurs) }} reverses aux formateurs</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card" style="animation-delay:.35s">
+        <div class="chart-header">
+          <div>
+            <h3>Etat des formations</h3>
+            <p>Repartition par statut de publication</p>
+          </div>
+          <div class="chart-badge">Catalogue</div>
+        </div>
+        <div class="chart-wrap">
+          <canvas #chartCoursRef class="chart-canvas"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card chart-small" style="animation-delay:.4s">
+        <div class="chart-header">
+          <div>
+            <h3>Pipeline admin</h3>
+            <p>Priorites de traitement</p>
+          </div>
+          <div class="chart-badge">Suivi</div>
+        </div>
+        <div class="chart-wrap">
+          <canvas #chartPipelineRef class="chart-canvas"></canvas>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="dot" style="background:#6366f1"></span>Cours en attente</span>
+          <span class="legend-item"><span class="dot" style="background:#8b5cf6"></span>Formateurs en attente</span>
+          <span class="legend-item"><span class="dot" style="background:#f59e0b"></span>Paiements en attente</span>
+          <span class="legend-item"><span class="dot" style="background:#10b981"></span>Certificats emis</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tables-row">
+      <div class="table-card" style="animation-delay:.45s">
+        <div class="table-header">
+          <div>
+            <h3>Dernieres formations</h3>
+            <p>Les soumissions et mises en ligne les plus recentes</p>
+          </div>
+          <span class="table-badge">Cours {{ derniersCours.length }}</span>
+        </div>
+
+        <div *ngIf="derniersCours.length === 0" class="table-empty">
+          <span>Aucune formation disponible pour le moment.</span>
+        </div>
+
+        <table *ngIf="derniersCours.length > 0" class="data-table">
+          <thead>
+            <tr>
+              <th>Formation</th>
+              <th>Formateur</th>
+              <th>Impact</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let course of derniersCours">
+              <td>
+                <div class="td-titre">{{ course.titre }}</div>
+                <div class="td-sub">{{ course.categorieNom || course.sousCategorieNom || 'Sans categorie' }}</div>
+              </td>
+              <td>
+                <div class="td-formateur">
+                  <div class="avatar-sm">{{ getInitiales(course.formateurNom) }}</div>
+                  {{ course.formateurNom }}
+                </div>
+              </td>
+              <td>{{ getCourseMeta(course) }}</td>
+              <td>
+                <span class="statut-pill" [ngClass]="getStatutClass(course.etatPublication)">
+                  {{ getStatutLabel(course.etatPublication) }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-card table-mid" style="animation-delay:.5s">
+        <div class="table-header">
+          <div>
+            <h3>Paiements en attente</h3>
+            <p>Codes a approuver ou refuser</p>
+          </div>
+          <span class="table-badge warn">Paiements {{ pendingPayments.length }}</span>
+        </div>
+
+        <div *ngIf="pendingPayments.length === 0" class="table-empty">
+          <span>Aucun paiement en attente.</span>
+        </div>
+
+        <div class="payment-list" *ngIf="pendingPayments.length > 0">
+          <div *ngFor="let payment of pendingPayments" class="payment-row">
+            <div class="payment-main">
+              <div class="payment-title">{{ payment.coursTitre }}</div>
+              <div class="payment-meta">{{ payment.etudiantNom }} - code {{ payment.codePaiement }}</div>
+              <div class="payment-sub">{{ payment.formateurNom || 'Formateur non renseigne' }}</div>
+            </div>
+            <div class="payment-side">
+              <strong>{{ formatMoney(payment.montant) }}</strong>
+              <span class="statut-pill" [ngClass]="getPaymentStatusClass(payment.statut)">
+                {{ getPaymentStatusLabel(payment.statut) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card table-small" style="animation-delay:.55s">
+        <div class="table-header">
+          <div>
+            <h3>Top formations</h3>
+            <p>Les plus performantes actuellement</p>
+          </div>
+          <span class="table-badge">Top {{ topCourses.length }}</span>
+        </div>
+
+        <div *ngIf="topCourses.length === 0" class="table-empty">
+          <span>Aucune formation publiee pour le classement.</span>
+        </div>
+
+        <div class="top-course-list" *ngIf="topCourses.length > 0">
+          <div *ngFor="let course of topCourses; let index = index" class="top-course-item">
+            <div class="top-course-rank">{{ index + 1 }}</div>
+            <div class="top-course-content">
+              <div class="top-course-title">{{ course.titre }}</div>
+              <div class="top-course-meta">{{ getCourseMeta(course) }}</div>
+              <div class="top-course-sub">{{ course.formateurNom }} - {{ course.categorieNom || 'Sans categorie' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="table-card" style="animation-delay:.6s">
+        <div class="table-header">
+          <div>
+            <h3>Candidatures formateurs</h3>
+            <p>Profils a analyser en priorite</p>
+          </div>
+          <span class="table-badge warn">Formateurs {{ dernieresCandidat.length }}</span>
+        </div>
+
+        <div *ngIf="dernieresCandidat.length === 0" class="table-empty">
+          <span>Aucune candidature formateur en attente.</span>
+        </div>
+
+        <div class="candidat-list" *ngIf="dernieresCandidat.length > 0">
+          <div *ngFor="let formateur of dernieresCandidat" class="candidat-row">
+            <div class="candidat-avatar">{{ getInitiales(formateur.nom) }}</div>
+            <div class="candidat-info">
+              <div class="candidat-nom">{{ formateur.nom }}</div>
+              <div class="candidat-email">{{ formateur.email }}</div>
+              <div class="candidat-spec" *ngIf="formateur.specialite">{{ formateur.specialite }}</div>
+            </div>
+            <span class="statut-pill attente">En attente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="animation-delay:.65s">
+        <div class="table-header">
+          <div>
+            <h3>Activite metier</h3>
+            <p>Les signaux utiles a suivre</p>
+          </div>
+          <span class="table-badge">Feed {{ activites.length }}</span>
+        </div>
+
+        <div *ngIf="activites.length === 0" class="table-empty">
+          <span>Aucune activite a signaler.</span>
+        </div>
+
+        <div class="feed-list" *ngIf="activites.length > 0">
+          <div *ngFor="let item of activites; let index = index" class="feed-item" [style.animation-delay]="(index * 60) + 'ms'">
+            <div class="feed-icon" [style.background]="item.color + '18'" [style.color]="item.color">
+              {{ item.icon }}
+            </div>
+            <div class="feed-content">
+              <div class="feed-msg">{{ item.message }}</div>
+              <div class="feed-time">{{ item.temps }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,186 @@
+<section class="signup__area po-rel-z1 pt-100 pb-145 auth-screen">
+  <div class="sign__shape">
+    <img class="man-1" src="assets/img/icon/sign/man-3.png" alt="" />
+    <img class="man-2 man-22" src="assets/img/icon/sign/man-2.png" alt="" />
+    <img class="circle" src="assets/img/icon/sign/circle.png" alt="" />
+    <img class="zigzag" src="assets/img/icon/sign/zigzag.png" alt="" />
+    <img class="dot" src="assets/img/icon/sign/dot.png" alt="" />
+    <img class="bg" src="assets/img/icon/sign/sign-up.png" alt="" />
+    <img class="flower" src="assets/img/icon/sign/flower.png" alt="" />
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-xxl-8 offset-xxl-2 col-xl-8 offset-xl-2">
+        <div class="section__title-wrapper text-center mb-55">
+          <span class="section__sub-title">Nouveau d&eacute;part</span>
+          <h2 class="section__title">Cr&eacute;ez votre compte en quelques secondes</h2>
+        
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xxl-6 offset-xxl-3 col-xl-6 offset-xl-3 col-lg-8 offset-lg-2">
+        <div class="sign__wrapper white-bg">
+          <div class="sign__header mb-35 text-center">
+            <p>Remplissez le formulaire ci-dessous pour commencer</p>
+          </div>
+
+          <div class="sign__form">
+            <form #registerForm="ngForm" (ngSubmit)="onRegister(registerForm)" novalidate>
+              <div class="sign__input-wrapper mb-25" [class.sign__input-wrapper--invalid]="shouldShowError(nameModel, registerForm)">
+                <h5>Nom complet</h5>
+                <div class="sign__input">
+                  <input
+                    type="text"
+                    [(ngModel)]="nom"
+                    name="nom"
+                    #nameModel="ngModel"
+                    placeholder="Pr&eacute;nom et nom"
+                    required
+                    minlength="3"
+                    autocomplete="name"
+                    id="register-name"
+                    [class.is-invalid]="shouldShowError(nameModel, registerForm)"
+                  />
+                 
+                </div>
+                <div *ngIf="shouldShowError(nameModel, registerForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getNameError(nameModel) }}</span>
+                </div>
+              </div>
+
+              <div class="sign__input-wrapper mb-25" [class.sign__input-wrapper--invalid]="shouldShowError(emailModel, registerForm)">
+                <h5>Adresse e-mail</h5>
+                <div class="sign__input">
+                  
+                  <input
+                    type="email"
+                    [(ngModel)]="email"
+                    name="email"
+                    #emailModel="ngModel"
+                    placeholder="exemple@email.com"
+                    required
+                    email
+                    autocomplete="email"
+                    id="register-email"
+                    [class.is-invalid]="shouldShowError(emailModel, registerForm)"
+                    
+                  />
+                
+                </div>
+                
+                <div *ngIf="shouldShowError(emailModel, registerForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getEmailError(emailModel) }}</span>
+                </div>
+              </div>
+
+              <div class="sign__input-wrapper mb-25" [class.sign__input-wrapper--invalid]="shouldShowError(passwordModel, registerForm)">
+                <h5>Mot de passe</h5>
+                <div class="sign__input sign__input--password">
+                  <input
+                    [type]="showPassword ? 'text' : 'password'"
+                    [(ngModel)]="motDePasse"
+                    name="motDePasse"
+                    #passwordModel="ngModel"
+                    placeholder="Minimum 6 caract&egrave;res"
+                    required
+                    minlength="6"
+                    autocomplete="new-password"
+                    id="register-password"
+                    [class.is-invalid]="shouldShowError(passwordModel, registerForm)"
+                  />
+                  
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    (click)="togglePasswordVisibility()"
+                    [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                    [attr.aria-pressed]="showPassword"
+                  >
+                    <i class="fal" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </button>
+                </div>
+                <div *ngIf="shouldShowError(passwordModel, registerForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getPasswordError(passwordModel) }}</span>
+                </div>
+              </div>
+
+              <div class="sign__input-wrapper mb-25" [class.sign__input-wrapper--invalid]="shouldShowConfirmPasswordError(confirmPasswordModel, registerForm)">
+                <h5>Confirmer le mot de passe</h5>
+                <div class="sign__input sign__input--password">
+                  <input
+                    [type]="showConfirmPassword ? 'text' : 'password'"
+                    [(ngModel)]="confirmationMotDePasse"
+                    name="confirmationMotDePasse"
+                    #confirmPasswordModel="ngModel"
+                    placeholder="Retapez votre mot de passe"
+                    required
+                    autocomplete="new-password"
+                    id="register-confirm-password"
+                    [class.is-invalid]="shouldShowConfirmPasswordError(confirmPasswordModel, registerForm)"
+                  />
+                  
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    (click)="toggleConfirmPasswordVisibility()"
+                    [attr.aria-label]="showConfirmPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                    [attr.aria-pressed]="showConfirmPassword"
+                  >
+                    <i class="fal" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </button>
+                </div>
+                <div *ngIf="shouldShowConfirmPasswordError(confirmPasswordModel, registerForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getConfirmPasswordError(confirmPasswordModel) }}</span>
+                </div>
+              </div>
+
+              <div class="sign__input-wrapper mb-25">
+                <h5>Je suis...</h5>
+                <div class="sign__input sign__input--select">
+                  <select [(ngModel)]="role" name="role" id="register-role">
+                    <option value="ETUDIANT">&Eacute;tudiant - je souhaite apprendre</option>
+                    <option value="FORMATEUR">Formateur - je souhaite enseigner</option>
+                  </select>
+                  
+                </div>
+                
+              </div>
+
+              
+
+              <div class="auth-meta">
+                <p class="auth-meta__hint">Apr&egrave;s l'inscription, vous serez guid&eacute; vers votre espace personnalis&eacute;.</p>
+              </div>
+
+              <button type="submit" class="e-btn w-100 auth-submit" id="register-submit" [disabled]="loading">
+                <span class="button-inline-content" *ngIf="loading">
+                  <span class="btn-spinner"></span>
+                  <span>Cr&eacute;ation du compte...</span>
+                </span>
+                <span *ngIf="!loading">Cr&eacute;er mon compte</span>
+              </button>
+
+              <div *ngIf="successMessage" class="auth-feedback auth-feedback--success">
+                <strong>Compte cr&eacute;&eacute; avec succ&egrave;s !</strong> {{ successMessage }}
+              </div>
+              <div *ngIf="errorMessage" class="auth-feedback auth-feedback--error">
+                <strong>Inscription impossible.</strong> {{ errorMessage }}
+              </div>
+
+              <div class="sign__new text-center mt-20">
+                <p>D&eacute;j&agrave; inscrit ? <a routerLink="/login">Se connecter</a></p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

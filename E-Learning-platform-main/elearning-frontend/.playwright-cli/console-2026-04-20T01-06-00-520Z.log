@@ -1,0 +1,18 @@
+[     426ms] [ERROR] JIT compilation failed for NgModule class AppModule2 {
+} @ http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-UFKZEUL3.js?v=efe3e1be:3655
+[     432ms] Error: The NgModule 'AppModule2' needs to be compiled using the JIT compiler, but '@angular/compiler' is not available.
+
+JIT compilation is discouraged for production use-cases! Consider using AOT mode instead.
+Alternatively, the JIT compiler should be loaded by bootstrapping using '@angular/platform-browser-dynamic' or '@angular/platform-server',
+or manually provide the compiler with 'import "@angular/compiler";' before bootstrapping.
+    at getCompilerFacade (http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-UFKZEUL3.js?v=efe3e1be:3675:11)
+    at AppModule2.get (http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-UFKZEUL3.js?v=efe3e1be:20581:26)
+    at getNgModuleDef (http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-UFKZEUL3.js?v=efe3e1be:1086:14)
+    at assertNgModuleType (http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-UFKZEUL3.js?v=efe3e1be:2172:8)
+    at compileNgModuleFactory (http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-UFKZEUL3.js?v=efe3e1be:23184:16)
+    at _PlatformRef.bootstrapModule (http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-UFKZEUL3.js?v=efe3e1be:23650:12)
+    at http://localhost:4200/main.js:39344:39
+[   79259ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[   80694ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-HMGNABYI.js?v=5b2c93e9:14338
+[   80747ms] [LOG] Interceptor ok, token: null @ http://localhost:4200/main.js:39869
+[   80752ms] [LOG] Interceptor ok, token: null @ http://localhost:4200/main.js:39869

@@ -1,0 +1,101 @@
+<footer>
+  <div class="footer__area footer-bg">
+    <div class="footer__top pt-90 pb-40">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div class="footer__widget mb-50">
+              <div class="footer__widget-head mb-22">
+                <div class="footer__logo">
+                  <a [routerLink]="['/home']" class="footer-brand">
+                    <img src="assets/img/logo/logo-2.png" alt="Educal" />
+                  </a>
+                </div>
+              </div>
+              <div class="footer__widget-body">
+                <p>
+                  Educal est votre plateforme e-learning complète pour apprendre,
+                  enseigner et progresser dans un environnement moderne et interactif.
+                </p>
+                <div class="footer__social">
+                  <ul>
+                    <li><a href="#" aria-label="Facebook"><i class="social_facebook"></i></a></li>
+                    <li><a href="#" class="tw" aria-label="Twitter"><i class="social_twitter"></i></a></li>
+                    <li><a href="#" class="pin" aria-label="Pinterest"><i class="social_pinterest"></i></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-2 col-lg-3 col-md-6 col-sm-6">
+            <div class="footer__widget mb-50">
+              <div class="footer__widget-head mb-22">
+                <h3 class="footer__widget-title">Navigation</h3>
+              </div>
+              <div class="footer__widget-body">
+                <div class="footer__link">
+                  <ul>
+                    <li><a [routerLink]="['/home']">Accueil</a></li>
+                    <li><a (click)="naviguerConnexion()" style="cursor: pointer;">Connexion</a></li>
+
+                    <li><a [routerLink]="['/register']">Inscription</a></li>
+                    <li><a [routerLink]="['/home']" fragment="courses">Nos cours</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-lg-2 col-md-6 col-sm-6">
+            <div class="footer__widget mb-50">
+              <div class="footer__widget-head mb-22">
+                <h3 class="footer__widget-title">Espaces</h3>
+              </div>
+              <div class="footer__widget-body">
+                <div class="footer__link">
+                  <ul>
+                    <li><a [routerLink]="['/student']">Espace étudiant</a></li>
+                    <li><a [routerLink]="['/teacher']">Espace formateur</a></li>
+                    <li><a [routerLink]="['/teacher-application']">Devenir formateur</a></li>
+                    <li><a [routerLink]="['/home']" fragment="categories">Catégories</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+            <div class="footer__widget mb-50">
+              <div class="footer__widget-head mb-22">
+                <h3 class="footer__widget-title">Aide</h3>
+              </div>
+              <div class="footer__widget-body">
+                <div class="footer__link">
+                  <ul>
+                    <li><a [routerLink]="['/home']" fragment="features">Pourquoi Educal</a></li>
+                    <li><a [routerLink]="['/register']">Créer un compte</a></li>
+                    <li><a href="mailto:contact@Educal.com">Nous contacter</a></li>
+                    <li><a [routerLink]="['/home']">Questions fréquentes</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="footer__copyright text-center">
+              <p>© {{ currentYear }} Educal. Tous droits réservés.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

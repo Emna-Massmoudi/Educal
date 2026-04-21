@@ -1,0 +1,267 @@
+@use './premium-tokens' as tokens;
+
+@mixin apply($root) {
+  #{$root} :is(.page-header, .topbar, .dash-header) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  #{$root} :is(.page-header h1, .topbar-left h1, .dash-header h1) {
+    @include tokens.section-heading;
+  }
+
+  #{$root} :is(.page-sub, .topbar-sub, .dash-sub) {
+    margin: 0;
+    color: tokens.$muted-600;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+
+  #{$root} :is(.kpi-grid, .stats-grid) {
+    gap: 18px;
+    margin-bottom: 26px;
+  }
+
+  #{$root} :is(
+    .section-card,
+    .kpi-card,
+    .stat-card,
+    .chart-card,
+    .table-card,
+    .cours-card,
+    .cat-card,
+    .mesCours-card,
+    .latest-card,
+    .mini-card,
+    .profil-card,
+    .cours-main,
+    .lecons-sidebar,
+    .insc-card,
+    .quiz-card-student,
+    .q-card,
+    .cours-row,
+    .insc-tab,
+    .state-box
+  ) {
+    border-color: rgba(215, 227, 248, 0.92);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
+  }
+
+  #{$root} :is(
+    .section-card,
+    .kpi-card,
+    .stat-card,
+    .chart-card,
+    .table-card,
+    .cours-card,
+    .cat-card,
+    .mesCours-card,
+    .mini-card,
+    .profil-card,
+    .cours-main,
+    .lecons-sidebar,
+    .insc-card,
+    .quiz-card-student,
+    .q-card,
+    .cours-row
+  ):hover {
+    box-shadow: 0 22px 42px rgba(79, 70, 229, 0.09);
+  }
+
+  #{$root} :is(.btn-add, .btn-submit, .btn-inscrire, .btn-inscrire-sm, .btn-start, .btn-start-quiz, .btn-soumettre, .btn-acceder, .btn-primary) {
+    @include tokens.primary-button;
+    min-height: 46px;
+    padding: 0.78rem 1.2rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    font-family: inherit;
+  }
+
+  #{$root} :is(.btn-cancel, .btn-secondary, .btn-back, .btn-back-sm, .cf-cancel) {
+    @include tokens.secondary-button;
+    min-height: 44px;
+    padding: 0.72rem 1.05rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: inherit;
+  }
+
+  #{$root} :is(.btn-annuler, .btn-refuser, .btn-delete, .cf-delete, .cf-annuler) {
+    @include tokens.soft-danger-button;
+    font-family: inherit;
+    font-weight: 700;
+  }
+
+  #{$root} :is(.btn-accepter, .cf-inscrire) {
+    @include tokens.soft-success-button;
+    font-family: inherit;
+    font-weight: 700;
+  }
+
+  #{$root} .toolbar {
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  #{$root} :is(.search-input, .filter-select) {
+    @include tokens.control-base;
+  }
+
+  #{$root} .search-input {
+    min-height: 48px;
+  }
+
+  #{$root} .filter-select {
+    min-height: 48px;
+    padding-right: 2.4rem;
+  }
+
+  #{$root} :is(.search-clear, .view-btn, .row-btn, .act-btn, .close-btn) {
+    border-radius: 12px;
+  }
+
+  #{$root} .view-toggle {
+    padding: 5px;
+    border-radius: 14px;
+    border-color: rgba(215, 227, 248, 0.96);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  }
+
+  #{$root} .view-btn.active {
+    background: linear-gradient(135deg, tokens.$brand-600, tokens.$accent-600);
+  }
+
+  #{$root} :is(.field input, .field textarea, .field select) {
+    @include tokens.control-base;
+    min-height: 50px;
+  }
+
+  #{$root} :is(.field input, .field textarea, .field select).is-invalid {
+    border-color: rgba(239, 68, 68, 0.34);
+    background: rgba(254, 242, 242, 0.9);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+  }
+
+  #{$root} .field textarea {
+    min-height: 120px;
+  }
+
+  #{$root} .field label {
+    color: tokens.$ink-800;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+  }
+
+  #{$root} .field--invalid label {
+    color: #b42318;
+  }
+
+  #{$root} :is(.chip-cat, .chip-sous, .chip-niveau, .chip-info, .badge-sub, .status-badge, .status-pill, .statut-pill, .home-card-meta) {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  }
+
+  #{$root} .empty-state {
+    @include tokens.elevated-panel(26px);
+    padding: 74px 22px;
+    border-style: solid;
+    border-color: rgba(199, 210, 254, 0.9);
+    background:
+      radial-gradient(circle at top center, rgba(99, 102, 241, 0.09), transparent 42%),
+      rgba(255, 255, 255, 0.92);
+  }
+
+  #{$root} .state-box {
+    @include tokens.glass-panel(22px);
+    min-height: 140px;
+  }
+
+  #{$root} .overlay {
+    background: rgba(15, 23, 42, 0.44);
+    backdrop-filter: blur(10px);
+  }
+
+  #{$root} .modal {
+    border: 1px solid rgba(215, 227, 248, 0.76);
+    box-shadow: 0 32px 90px rgba(15, 23, 42, 0.22);
+  }
+
+  #{$root} :is(.modal-header, .modal-footer, .confirm-footer, .quiz-pass-header, .quiz-pass-footer) {
+    border-color: rgba(215, 227, 248, 0.76);
+  }
+
+  #{$root} .table-header h3,
+  #{$root} .chart-header h3,
+  #{$root} .section-head h3,
+  #{$root} .lecons-sidebar-head h3,
+  #{$root} .quiz-pass-titre {
+    color: tokens.$ink-900;
+  }
+
+  #{$root} :is(.table-header p, .chart-header p, .interests-copy, .modal p, .candidat-email, .td-sub, .feed-time) {
+    color: tokens.$muted-600;
+  }
+
+  #{$root} .data-table tr:hover {
+    background: rgba(238, 242, 255, 0.5);
+  }
+
+  #{$root} .pdf-upload-zone {
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, rgba(248, 250, 252, 0.94), rgba(255, 255, 255, 0.92));
+  }
+
+  #{$root} .pdf-upload-zone:hover {
+    border-color: rgba(99, 102, 241, 0.46);
+  }
+
+  #{$root} .interests-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(79, 70, 229, 0.18);
+    box-shadow: 0 24px 50px rgba(49, 46, 129, 0.24);
+  }
+
+  #{$root} .interests-card::after {
+    content: '';
+    position: absolute;
+    inset: auto -50px -80px auto;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.14), transparent 68%);
+    pointer-events: none;
+  }
+
+  #{$root} .interest-pill {
+    border-radius: 999px;
+  }
+
+  #{$root} :is(.student-onboarding__card, .sign__wrapper) {
+    @include tokens.elevated-panel(28px);
+  }
+
+  #{$root} .surface-feedback {
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    #{$root} :is(.page-header, .topbar, .dash-header) {
+      margin-bottom: 22px;
+    }
+
+    #{$root} .toolbar {
+      gap: 12px;
+    }
+
+    #{$root} .empty-state {
+      padding: 54px 18px;
+    }
+  }
+}

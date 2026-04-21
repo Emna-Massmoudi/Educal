@@ -1,0 +1,370 @@
+<div class="quiz-page">
+  <div *ngIf="noticeMessage" class="state-box state-box--notice" [class.state-box--error]="noticeTone === 'error'">
+    <span>{{ noticeMessage }}</span>
+  </div>
+
+  <ng-container *ngIf="vue === 'cours'">
+    <div class="page-header">
+      <div>
+        <h1>Gestion des quiz et examens</h1>
+        <p class="page-sub">Selectionnez un cours pour gerer ses lecons, evaluations et publications.</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="state-box"><div class="spinner"></div><span>Chargement...</span></div>
+
+    <div *ngIf="!loading && mesCours.length === 0" class="empty-state">
+      <div class="empty-emoji">[ ]</div>
+      <h3>Aucun cours disponible</h3>
+      <p>Creez d abord une formation depuis "Mes formations".</p>
+    </div>
+
+    <div class="cours-grid" *ngIf="!loading && mesCours.length > 0">
+      <div *ngFor="let cours of mesCours; let i = index" class="cours-card" [style.--delay]="i * 60 + 'ms'" (click)="selectionnerCours(cours)">
+        <div class="card-banner" [style.background]="getBannerGradient(cours.categorieId)">
+          <img
+            *ngIf="cours.imageUrl"
+            [src]="cours.imageUrl.startsWith('http') ? cours.imageUrl : 'http://localhost:8081' + cours.imageUrl"
+            class="card-img"
+            (error)="$any($event.target).style.display = 'none'"
+          />
+          <span *ngIf="!cours.imageUrl" class="card-emoji">{{ getIcon(cours.categorieNom) }}</span>
+        </div>
+        <div class="card-body">
+          <h3>{{ cours.titre }}</h3>
+          <p>{{ cours.categorieNom }}</p>
+          <div class="card-arrow">Gerer les evaluations -></div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="vue === 'lecons'">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <button class="btn-back" (click)="retourCours()"><- Mes cours</button>
+        <span>/</span>
+        <span class="bc-current">{{ coursSelectionne?.titre }}</span>
+      </div>
+      <button class="btn-primary" (click)="openLeconForm()">Ajouter une lecon</button>
+    </div>
+
+    <div *ngIf="loading" class="state-box"><div class="spinner"></div><span>Chargement...</span></div>
+
+    <div *ngIf="!loading && lecons.length === 0" class="empty-state">
+      <div class="empty-emoji">[book]</div>
+      <h3>Aucune lecon</h3>
+      <p>Ajoutez des lecons a ce cours pour creer des quiz et des examens.</p>
+    </div>
+
+    <div class="lecons-list" *ngIf="!loading && lecons.length > 0">
+      <div *ngFor="let lecon of lecons; let i = index" class="lecon-card" [style.--delay]="i * 55 + 'ms'">
+        <div class="lecon-ordre">{{ lecon.ordre }}</div>
+        <div class="lecon-info" (click)="selectionnerLecon(lecon)">
+          <div class="lecon-titre">{{ lecon.titre }}</div>
+          <div class="lecon-desc" *ngIf="lecon.description">{{ lecon.description }}</div>
+          <div class="lecon-media-meta" *ngIf="lecon.ressources?.length">
+            <span *ngFor="let resource of lecon.ressources">
+              {{ resource.type === 'VIDEO' ? 'Video' : resource.type === 'IMAGE' ? 'Image' : 'Piece jointe' }}
+            </span>
+          </div>
+          <div class="lecon-link">Voir les evaluations -></div>
+        </div>
+        <div class="lecon-actions">
+          <button class="icon-btn edit" (click)="openLeconForm(lecon)" title="Modifier">Edit</button>
+          <button class="icon-btn del" (click)="confirmerSupprimer('lecon', lecon.id, lecon.titre)" title="Supprimer">Del</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="vue === 'quiz'">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <button class="btn-back" (click)="retourCours()"><- Mes cours</button>
+        <span>/</span>
+        <button class="btn-bc" (click)="retourLecons()">{{ coursSelectionne?.titre }}</button>
+        <span>/</span>
+        <span class="bc-current">{{ leconSelectionnee?.titre }}</span>
+      </div>
+      <button class="btn-primary" (click)="openEvalForm()">Creer une evaluation</button>
+    </div>
+
+    <div *ngIf="loading" class="state-box"><div class="spinner"></div><span>Chargement...</span></div>
+
+    <div *ngIf="!loading && evaluations.length === 0" class="empty-state">
+      <div class="empty-emoji">[quiz]</div>
+      <h3>Aucune evaluation</h3>
+      <p>Creez un quiz ou un examen, puis publiez-le quand il est pret.</p>
+    </div>
+
+    <div class="lesson-preview" *ngIf="!loading && leconSelectionnee">
+      <div class="lesson-preview__head">
+        <div>
+          <h3>{{ leconSelectionnee.titre }}</h3>
+          <p *ngIf="leconSelectionnee.description">{{ leconSelectionnee.description }}</p>
+        </div>
+        <button class="btn-secondary" (click)="openLeconForm(leconSelectionnee)">Modifier la lecon</button>
+      </div>
+      <div class="lesson-preview__content" *ngIf="leconSelectionnee.contenuHtml" [innerHTML]="leconSelectionnee.contenuHtml"></div>
+      <div class="lesson-preview__resources" *ngIf="leconSelectionnee.ressources?.length">
+        <div class="resource-pill" *ngFor="let resource of leconSelectionnee.ressources">
+          {{ resource.nom }} - {{ resource.type }}
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-grid" *ngIf="!loading && evaluations.length > 0">
+      <div *ngFor="let evaluation of evaluations; let i = index" class="quiz-card" [style.--delay]="i * 60 + 'ms'">
+        <div class="quiz-card-header">
+          <div class="quiz-card-badges">
+            <span class="type-badge" [ngClass]="getTypeClass(evaluation.type)">{{ getTypeLabel(evaluation.type) }}</span>
+            <span class="publish-badge" [class.publish-badge--live]="evaluation.publie">
+              {{ evaluation.publie ? 'Publie' : 'Brouillon' }}
+            </span>
+          </div>
+          <div class="quiz-card-actions">
+            <button class="icon-btn edit" (click)="openEvalForm(evaluation)" title="Modifier">Edit</button>
+            <button class="icon-btn del" (click)="confirmerSupprimer('eval', evaluation.id, evaluation.titre)" title="Supprimer">Del</button>
+          </div>
+        </div>
+        <h3 class="quiz-titre">{{ evaluation.titre }}</h3>
+        <div class="quiz-meta">
+          <span>Note max : {{ evaluation.noteMax }}</span>
+          <span>Note mini : {{ evaluation.noteMin }}</span>
+          <span>{{ evaluation.questionCount }} question(s)</span>
+        </div>
+        <div class="quiz-card-footer">
+          <button class="btn-questions" (click)="selectionnerEval(evaluation)">Gerer les questions -></button>
+          <button
+            class="btn-publish"
+            [class.btn-publish--secondary]="evaluation.publie"
+            (click)="changerPublication(evaluation, !evaluation.publie)"
+          >
+            {{ evaluation.publie ? 'Retirer' : 'Publier' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="vue === 'questions'">
+    <div class="page-header">
+      <div class="breadcrumb">
+        <button class="btn-back" (click)="retourCours()"><- Mes cours</button>
+        <span>/</span>
+        <button class="btn-bc" (click)="retourLecons()">{{ coursSelectionne?.titre }}</button>
+        <span>/</span>
+        <button class="btn-bc" (click)="retourQuiz()">{{ leconSelectionnee?.titre }}</button>
+        <span>/</span>
+        <span class="bc-current">{{ evalSelectionnee?.titre }}</span>
+      </div>
+      <div class="header-right">
+        <span class="total-points">Total : {{ totalPoints() }} pts</span>
+        <button class="btn-primary" (click)="openQuestionForm()">Ajouter une question</button>
+      </div>
+    </div>
+
+    <div class="publish-hint" *ngIf="evalSelectionnee">
+      <span class="publish-badge" [class.publish-badge--live]="evalSelectionnee.publie">
+        {{ evalSelectionnee.publie ? 'Evaluation publiee' : 'Brouillon non publie' }}
+      </span>
+      <p>Une evaluation publiee devient disponible pour les etudiants inscrits et valides.</p>
+    </div>
+
+    <div *ngIf="loading" class="state-box"><div class="spinner"></div><span>Chargement...</span></div>
+
+    <div *ngIf="!loading && questions.length === 0" class="empty-state">
+      <div class="empty-emoji">[?]</div>
+      <h3>Aucune question</h3>
+      <p>Ajoutez des questions avant de publier cette evaluation.</p>
+    </div>
+
+    <div class="questions-list" *ngIf="!loading && questions.length > 0">
+      <div *ngFor="let question of questions; let i = index" class="question-card" [style.--delay]="i * 55 + 'ms'">
+        <div class="q-header">
+          <div class="q-num">Q{{ i + 1 }}</div>
+          <div class="q-enonce">{{ question.enonce }}</div>
+          <div class="q-points">{{ question.point }} pt(s)</div>
+          <div class="q-actions">
+            <button class="icon-btn edit" (click)="openQuestionForm(question)">Edit</button>
+            <button class="icon-btn del" (click)="confirmerSupprimer('question', question.id, question.enonce)">Del</button>
+          </div>
+        </div>
+        <div class="choix-list">
+          <div *ngFor="let choice of question.choix" class="choix-item" [class.correct]="choice.estCorrect">
+            <span class="choix-dot" [class.correct]="choice.estCorrect">{{ choice.estCorrect ? 'OK' : 'O' }}</span>
+            {{ choice.texte }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="showLeconForm" class="overlay" (click)="closeLeconForm()">
+    <div class="modal modal-xl" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ leconToEdit ? 'Modifier la lecon' : 'Nouvelle lecon' }}</h3>
+        <button class="close-btn" (click)="closeLeconForm()">X</button>
+      </div>
+      <div class="modal-body">
+        <div class="field"><label>Titre *</label><input type="text" [(ngModel)]="leconForm.titre" placeholder="Titre de la lecon" /></div>
+        <div class="field"><label>Introduction</label><textarea [(ngModel)]="leconForm.description" rows="3" placeholder="Resume court visible dans la liste des lecons..."></textarea></div>
+        <div class="field"><label>Ordre</label><input type="number" [(ngModel)]="leconForm.ordre" min="1" /></div>
+
+        <div class="field">
+          <label>Contenu de la lecon</label>
+          <div class="editor-toolbar">
+            <button type="button" class="editor-btn" (click)="applyEditorCommand('bold')"><strong>B</strong></button>
+            <button type="button" class="editor-btn" (click)="applyEditorCommand('italic')"><em>I</em></button>
+            <button type="button" class="editor-btn" (click)="applyEditorCommand('underline')"><u>U</u></button>
+            <button type="button" class="editor-btn" (click)="setEditorBlock('h2')">H2</button>
+            <button type="button" class="editor-btn" (click)="setEditorBlock('h3')">H3</button>
+            <button type="button" class="editor-btn" (click)="setEditorBlock('p')">P</button>
+            <button type="button" class="editor-btn" (click)="applyEditorCommand('insertUnorderedList')">Liste</button>
+            <button type="button" class="editor-btn" (click)="applyEditorCommand('insertOrderedList')">Liste numerotee</button>
+          </div>
+          <div #lessonEditor class="lesson-editor" contenteditable="true" (input)="captureEditorContent()" (blur)="captureEditorContent()"></div>
+          <p class="field-hint">Ajoute du texte formate comme dans un mini document Word.</p>
+        </div>
+
+        <div class="field">
+          <div class="resource-header">
+            <label>Ressources de la lecon</label>
+            <div class="resource-actions">
+              <button type="button" class="btn-add-choix" (click)="addLeconVideo()">+ Video</button>
+              <button type="button" class="btn-add-choix" (click)="addLeconImageUrl()">+ Image</button>
+              <button type="button" class="btn-add-choix" (click)="addLeconAttachmentLink()">+ Piece jointe</button>
+            </div>
+          </div>
+
+          <div class="upload-actions">
+            <label class="upload-chip">
+              <input type="file" accept="image/*" hidden (change)="onLeconImageChange($event)" />
+              {{ leconImageUploading ? 'Upload image...' : 'Importer une image' }}
+            </label>
+            <label class="upload-chip">
+              <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip" hidden (change)="onLeconAttachmentChange($event)" />
+              {{ leconAttachmentUploading ? 'Upload piece jointe...' : 'Importer une piece jointe' }}
+            </label>
+            <label class="upload-chip">
+              <input type="file" accept="application/pdf" hidden (change)="onLeconPdfChange($event)" />
+              Ajouter un PDF
+            </label>
+          </div>
+
+          <div class="resource-list" *ngIf="leconResources.length > 0">
+            <div *ngFor="let resource of leconResources; let ri = index" class="resource-item">
+              <select [(ngModel)]="resource.type" (ngModelChange)="syncLegacyPdfUrl()">
+                <option value="VIDEO">Video</option>
+                <option value="IMAGE">Image</option>
+                <option value="DOCUMENT">Piece jointe</option>
+              </select>
+              <input type="text" [(ngModel)]="resource.nom" placeholder="Nom visible" />
+              <input type="text" [(ngModel)]="resource.url" placeholder="URL ou fichier upload" />
+              <button type="button" class="choix-del-btn" (click)="removeLeconResource(ri)">X</button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="leconError" class="inline-error">Attention : {{ leconError }}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeLeconForm()">Annuler</button>
+        <button class="btn-submit" (click)="sauvegarderLecon()" [disabled]="leconLoading">
+          <span class="btn-spinner" *ngIf="leconLoading"></span>
+          {{ leconLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showEvalForm" class="overlay" (click)="showEvalForm = false">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ evalToEdit ? 'Modifier l evaluation' : 'Nouvelle evaluation' }}</h3>
+        <button class="close-btn" (click)="showEvalForm = false">X</button>
+      </div>
+      <div class="modal-body">
+        <div class="field"><label>Titre *</label><input type="text" [(ngModel)]="evalForm.titre" placeholder="Ex: Examen final module 1" /></div>
+        <div class="field">
+          <label>Type</label>
+          <select [(ngModel)]="evalForm.type">
+            <option value="QUIZ">Quiz</option>
+            <option value="EXAMEN">Examen</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Note max</label><input type="number" [(ngModel)]="evalForm.noteMax" min="1" /></div>
+          <div class="field"><label>Note min (reussite)</label><input type="number" [(ngModel)]="evalForm.noteMin" min="0" /></div>
+        </div>
+        <div *ngIf="evalError" class="inline-error">Attention : {{ evalError }}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="showEvalForm = false">Annuler</button>
+        <button class="btn-submit" (click)="sauvegarderEval()" [disabled]="evalLoading">
+          <span class="btn-spinner" *ngIf="evalLoading"></span>
+          {{ evalLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showQuestionForm" class="overlay" (click)="showQuestionForm = false">
+    <div class="modal modal-large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ questionToEdit ? 'Modifier la question' : 'Nouvelle question' }}</h3>
+        <button class="close-btn" (click)="showQuestionForm = false">X</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Enonce *</label>
+          <textarea [(ngModel)]="questionForm.enonce" rows="3" placeholder="Ecrivez la question..."></textarea>
+        </div>
+        <div class="field">
+          <label>Points</label>
+          <input type="number" [(ngModel)]="questionForm.point" min="1" max="20" />
+        </div>
+
+        <div class="choix-editor">
+          <div class="choix-editor-header">
+            <label>Choix de reponses</label>
+            <button class="btn-add-choix" (click)="ajouterChoix()">+ Ajouter un choix</button>
+          </div>
+          <div *ngFor="let choice of choixTemp; let ci = index" class="choix-row">
+            <button class="choix-correct-btn" [class.correct]="choice.estCorrect" (click)="definirCorrect(ci)" title="Marquer comme correct">
+              {{ choice.estCorrect ? 'OK' : 'O' }}
+            </button>
+            <input type="text" [(ngModel)]="choice.texte" placeholder="Texte du choix {{ ci + 1 }}..." class="choix-input" />
+            <button class="choix-del-btn" (click)="supprimerChoix(ci)" [disabled]="choixTemp.length <= 2" title="Supprimer">X</button>
+          </div>
+          <p class="choix-hint">Cliquez sur O pour definir la bonne reponse.</p>
+        </div>
+
+        <div *ngIf="questionError" class="inline-error">Attention : {{ questionError }}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="showQuestionForm = false">Annuler</button>
+        <button class="btn-submit" (click)="sauvegarderQuestion()" [disabled]="questionLoading">
+          <span class="btn-spinner" *ngIf="questionLoading"></span>
+          {{ questionLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showDeleteConfirm" class="overlay" (click)="annulerSupprimer()">
+    <div class="modal modal-confirm" (click)="$event.stopPropagation()">
+      <div class="modal-icon-big">Del</div>
+      <h3>Supprimer ?</h3>
+      <p>Vous allez supprimer <strong>{{ deleteTarget?.label }}</strong>. Cette action est irreversible.</p>
+      <div class="confirm-footer">
+        <button class="cf-cancel" (click)="annulerSupprimer()">Annuler</button>
+        <button class="cf-delete" (click)="execSupprimer()" [disabled]="deleteLoading">
+          <span class="btn-spinner" *ngIf="deleteLoading"></span>
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

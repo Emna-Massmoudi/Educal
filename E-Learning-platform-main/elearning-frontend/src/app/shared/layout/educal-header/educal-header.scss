@@ -1,0 +1,359 @@
+.public-header {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  padding-top: 0.42rem !important;
+  padding-bottom: 0.42rem !important;
+}
+
+.public-header .row {
+  min-height: 54px;
+}
+
+.public-header .header__right {
+  gap: 0.6rem;
+  flex-wrap: nowrap;
+}
+
+.public-header .main-menu,
+.public-header .main-menu nav {
+  display: flex;
+  align-items: center;
+}
+
+.public-header .main-menu ul {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 1.05rem;
+  margin: 0;
+  padding: 0;
+}
+
+.public-header .main-menu ul li {
+  margin-right: 0;
+  flex: 0 0 auto;
+}
+
+.public-header .main-menu ul li a {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9rem;
+  line-height: 1;
+  white-space: nowrap;
+  position: relative;
+  padding: 0.35rem 0;
+  color: #0e1133;
+  transition: color 0.2s ease;
+}
+
+.public-header .main-menu ul li a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.38rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2b4eff, #14b8a6);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.public-header .main-menu ul li a:hover,
+.public-header .main-menu ul li a.is-active {
+  color: #2b4eff;
+}
+
+.public-header .main-menu ul li a:hover::after,
+.public-header .main-menu ul li a.is-active::after {
+  transform: scaleX(1);
+}
+
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.brand-link img {
+  height: 28px;
+  width: auto;
+}
+
+.public-header .e-btn,
+.public-header .e-btn-border {
+  min-height: auto;
+  padding: 0.58rem 0.95rem;
+  font-size: 0.84rem;
+  line-height: 1;
+}
+
+.public-header__account {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.75rem;
+}
+
+.public-header__profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.24rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(43, 78, 255, 0.06);
+  border: 1px solid rgba(43, 78, 255, 0.1);
+}
+
+.public-header__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2b4eff, #8b5cf6);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.public-header__identity {
+  min-width: 0;
+}
+
+.public-header__identity strong,
+.public-header__identity span {
+  display: block;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.public-header__identity strong {
+  color: #0e1133;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.public-header__identity span {
+  color: #6d6e75;
+  font-size: 0.68rem;
+}
+
+.public-header__dashboard {
+  min-width: 124px;
+}
+
+.public-header__logout {
+  background: transparent;
+  min-width: 106px;
+}
+
+.public-header .sidebar-toggle-btn {
+  margin-left: 0.85rem;
+  transform: scale(0.92);
+}
+
+.public-mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.public-mobile-nav a {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0e1133;
+  transition: color 0.2s ease;
+}
+
+.public-mobile-nav a.is-active {
+  color: #2b4eff;
+}
+
+.public-mobile-account {
+  margin-bottom: 1rem;
+}
+
+.public-mobile-actions .w-100 {
+  width: 100%;
+}
+
+@media (max-width: 575px) {
+  .public-header {
+    padding-top: 0.32rem !important;
+    padding-bottom: 0.32rem !important;
+  }
+
+  .public-header .row {
+    min-height: 48px;
+  }
+
+  .brand-link img {
+    height: 24px;
+  }
+}
+/* ===== NAVBAR MODERNE STYLE STUDENT ===== */
+.public-header {
+  background: white;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(14, 17, 51, 0.08);
+  box-shadow: 0 4px 20px rgba(1, 11, 60, 0.06);
+  padding: 0.4rem 0 !important;
+}
+
+/* MENU */
+.public-header .main-menu ul li a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #6d6e75;
+  padding: 8px 12px;
+  border-radius: 10px;
+
+  transition: all 0.2s ease;
+}
+
+/* HOVER */
+.public-header .main-menu ul li a:hover {
+  background: rgba(43, 78, 255, 0.08);
+  color: #2b4eff;
+}
+
+/* ACTIVE */
+.public-header .main-menu ul li a.is-active {
+  background: rgba(43, 78, 255, 0.12);
+  color: #2b4eff;
+  font-weight: 700;
+}
+
+/* SUPPRIMER L'ANCIEN UNDERLINE */
+.public-header .main-menu ul li a::after {
+  display: none;
+}
+
+/* LOGO */
+.brand-link img {
+  height: 30px;
+}
+
+/* ACCOUNT */
+.public-header__profile {
+  background: rgba(43, 78, 255, 0.06);
+  border: 1px solid rgba(43, 78, 255, 0.1);
+}
+
+/* BOUTONS */
+.public-header .e-btn {
+  border-radius: 10px;
+  font-size: 13px;
+  padding: 8px 14px;
+}
+
+/* LOGOUT */
+.public-header__logout {
+  background: transparent;
+}
+
+.public-header__logout:hover {
+  background: rgba(217, 58, 102, 0.1);
+  color: #d93a66;
+}
+.logo-icon {
+  width: 36px;
+  height: 36px;
+
+  background: linear-gradient(135deg, #2b4eff, #14b8a6); /* ✅ couleurs fixes */
+
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  flex-shrink: 0;
+
+  box-shadow: 0 4px 14px rgba(43, 78, 255, 0.4);
+  color: white;
+}
+/* CONTAINER LOGO */
+.brand-link {
+  display: flex;
+  align-items: center; /* 🔥 aligne verticalement */
+  gap: 10px;
+  text-decoration: none;
+}
+
+/* LOGO */
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #2b4eff, #14b8a6);
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  color: white;
+
+  flex-shrink: 0; /* 🔥 empêche le rétrécissement */
+}
+
+/* TEXTE */
+.brand-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0e1133;
+
+  line-height: 1; /* 🔥 empêche le décalage vertical */
+  display: flex;
+  align-items: center;
+}
+/* ===== BOUTONS NAVBAR STYLE PREMIUM ===== */
+.public-header .e-btn,
+.public-header .e-btn-border {
+  border-radius: 999px; /* 🔥 rond */
+  padding: 8px 18px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+/* DASHBOARD (BLEU) */
+.public-header__dashboard {
+  background: linear-gradient(135deg, #2b4eff, #4f46e5);
+  color: white !important;
+  border: none;
+
+  box-shadow: 0 4px 12px rgba(43, 78, 255, 0.3);
+}
+
+.public-header__dashboard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(43, 78, 255, 0.4);
+}
+
+/* LOGOUT (ROUGE) */
+.public-header__logout {
+  border-radius: 999px;
+  border: 1px solid rgba(217, 58, 102, 0.3);
+  color: #d93a66;
+  background: transparent;
+}
+
+.public-header__logout:hover {
+  background: rgba(217, 58, 102, 0.1);
+  color: #d93a66;
+  border-color: #d93a66;
+}

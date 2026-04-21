@@ -1,0 +1,11 @@
+[     357ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-O464JHJL.js?v=25ad70d3:14336
+[  331125ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[  400271ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/GRATI/Desktop/edunet/E-Learning-platform-main/elearning-frontend/.angular/cache/21.2.3/elearning-frontend/vite/deps/chunk-O464JHJL.js?v=25ad70d3:14336
+[  402317ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[  554603ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://gc.kis.v2.scr.kaspersky-labs.com/184D6710-6602-4EE3-9927-282E10E68F26/99B9CF8E-2A10-401E-95C3-015498A0A2FD/from?get&nocache=155a6&tm=2026-04-20T01%3A35%3A32.556Z:0
+[  554704ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ http://gc.kis.v2.scr.kaspersky-labs.com/184D6710-6602-4EE3-9927-282E10E68F26/99B9CF8E-2A10-401E-95C3-015498A0A2FD/from?get&nocache=17518&tm=2026-04-20T01%3A35%3A33.129Z&second=true:0
+[  558486ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ http://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=hb1KpRK_GHeZiMvNHqX1pzCnRKs7ZKh4KJ9H4TQi1NTp3f4CyCmk5Oz3-NDuLfN9:0
+[  559044ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:4200/main.js:0
+[  559047ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:4200/styles.css:0
+[  559047ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:4200/@vite/client:0
+[  559089ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:4200/favicon.ico:0

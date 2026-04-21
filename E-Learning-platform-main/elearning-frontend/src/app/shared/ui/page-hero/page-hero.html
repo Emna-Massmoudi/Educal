@@ -1,0 +1,21 @@
+<section
+  class="page__title-area page__title-height page__title-overlay d-flex align-items-center page-hero"
+  [ngStyle]="{
+    backgroundImage: 'linear-gradient(90deg, rgba(14,17,51,.88), rgba(47,57,113,.72)), url(' + backgroundImage + ')',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center'
+  }"
+>
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-8 col-lg-9 col-md-10">
+        <div class="page__title-wrapper mt-110">
+          <span class="page-hero__eyebrow">{{ eyebrow }}</span>
+          <h1 class="page__title">{{ title }}</h1>
+          <p *ngIf="subtitle" class="page-hero__subtitle">{{ subtitle }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

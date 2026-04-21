@@ -1,0 +1,97 @@
+<div class="payments-admin">
+  <div class="topbar">
+    <div>
+      <span class="eyebrow">Validation financiere</span>
+      <h1>Paiements par code</h1>
+      <p>Validez les codes issus des transferts bancaires pour activer les inscriptions payantes.</p>
+    </div>
+    <button type="button" class="refresh-btn" (click)="chargerPaiements()" [disabled]="loading">
+      {{ loading ? 'Chargement...' : 'Actualiser' }}
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span>Total</span>
+      <strong>{{ paiements.length }}</strong>
+    </div>
+    <div class="stat-card pending">
+      <span>En attente</span>
+      <strong>{{ pendingCount }}</strong>
+    </div>
+    <div class="stat-card approved">
+      <span>Approuves</span>
+      <strong>{{ approvedCount }}</strong>
+    </div>
+    <div class="stat-card rejected">
+      <span>Refuses</span>
+      <strong>{{ rejectedCount }}</strong>
+    </div>
+  </div>
+
+  <div *ngIf="successMessage" class="alert success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert error">{{ errorMessage }}</div>
+
+  <div class="toolbar">
+    <input type="text" [(ngModel)]="searchQuery" placeholder="Rechercher par code, cours, etudiant ou formateur..." />
+    <select [(ngModel)]="filterStatut">
+      <option value="">Tous les statuts</option>
+      <option value="EN_ATTENTE">En attente</option>
+      <option value="APPROUVE">Approuve</option>
+      <option value="REFUSE">Refuse</option>
+    </select>
+    <button type="button" class="clear-btn" (click)="resetFilters()">Effacer</button>
+  </div>
+
+  <div *ngIf="loading" class="state-box">
+    <span class="spinner"></span>
+    <span>Chargement des paiements...</span>
+  </div>
+
+  <div *ngIf="!loading && filteredPaiements().length === 0" class="empty-state">
+    <h3>Aucun paiement trouve</h3>
+    <p>Les demandes de paiement par code apparaitront ici apres soumission par les etudiants.</p>
+  </div>
+
+  <div *ngIf="!loading && filteredPaiements().length > 0" class="payments-list">
+    <article *ngFor="let paiement of filteredPaiements()" class="payment-card">
+      <div class="payment-card__main">
+        <div class="payment-card__code">
+          <span>Code</span>
+          <strong>{{ paiement.codePaiement }}</strong>
+        </div>
+        <div>
+          <h3>{{ paiement.coursTitre }}</h3>
+          <p>{{ paiement.etudiantNom }} -> {{ paiement.formateurNom || 'Formateur' }}</p>
+        </div>
+      </div>
+
+      <div class="payment-card__amounts">
+        <div>
+          <span>Montant</span>
+          <strong>{{ formatPrice(paiement.montant) }}</strong>
+        </div>
+        <div>
+          <span>Plateforme 20%</span>
+          <strong>{{ formatPrice(paiement.commissionPlateforme) }}</strong>
+        </div>
+        <div>
+          <span>Formateur 80%</span>
+          <strong>{{ formatPrice(paiement.montantFormateur) }}</strong>
+        </div>
+      </div>
+
+      <div class="payment-card__footer">
+        <span class="status-pill" [ngClass]="getStatutClass(paiement.statut)">{{ getStatutLabel(paiement.statut) }}</span>
+        <div class="payment-actions" *ngIf="paiement.statut === 'EN_ATTENTE'">
+          <button type="button" class="approve-btn" (click)="approuver(paiement)" [disabled]="actionLoadingId === paiement.id">
+            {{ actionLoadingId === paiement.id ? 'Traitement...' : 'Approuver' }}
+          </button>
+          <button type="button" class="reject-btn" (click)="refuser(paiement)" [disabled]="actionLoadingId === paiement.id">
+            Refuser
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>

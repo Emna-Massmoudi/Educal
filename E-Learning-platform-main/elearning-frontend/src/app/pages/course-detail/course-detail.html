@@ -1,0 +1,231 @@
+<section class="course-detail-page">
+  <div class="container">
+    <div class="course-detail-page__breadcrumb">
+      <a [routerLink]="['/home']">Accueil</a>
+      <span>/</span>
+      <a [routerLink]="['/home']" fragment="courses">Formations</a>
+      <span>/</span>
+      <span>{{ course?.titre || 'Detail de la formation' }}</span>
+    </div>
+
+    <div *ngIf="pageFeedbackMessage" class="course-detail-page__feedback" [ngClass]="'course-detail-page__feedback--' + pageFeedbackTone">
+      {{ pageFeedbackMessage }}
+    </div>
+
+    <div *ngIf="loading" class="course-detail-page__state">
+      <span class="btn-spinner btn-spinner--dark"></span>
+      <span>Chargement de la formation...</span>
+    </div>
+
+    <div *ngIf="!loading && error" class="course-detail-page__state">
+      <span>Cette formation est introuvable ou n est plus disponible.</span>
+      <button type="button" class="course-detail-page__inline-action" (click)="retry()">Reessayer</button>
+    </div>
+
+    <ng-container *ngIf="!loading && !error && course">
+      <section class="course-detail-page__hero">
+        <div class="course-detail-page__hero-copy">
+          <div class="course-detail-page__eyebrow">
+            <span>{{ course.categorieNom || 'Formation' }}</span>
+            <span>{{ getCourseLevelLabel(course) }}</span>
+          </div>
+
+          <h1>{{ course.titre }}</h1>
+          <p>{{ course.description || 'Une formation structuree pour apprendre pas a pas avec une approche claire et concrete.' }}</p>
+
+          <div class="course-detail-page__stats">
+            <div class="course-detail-page__stat">
+              <strong>{{ ratingLabel }}</strong>
+              <span>{{ reviewSummaryLabel }}</span>
+            </div>
+            <div class="course-detail-page__stat">
+              <strong>{{ lessonPreviews.length }}</strong>
+              <span>lecons dans le programme</span>
+            </div>
+            <div class="course-detail-page__stat">
+              <strong>{{ getCoursePriceLabel(course) }}</strong>
+              <span>{{ course.duree || 'Acces flexible' }}</span>
+            </div>
+          </div>
+
+          <div class="course-detail-page__actions">
+            <button
+              type="button"
+              class="e-btn"
+              [disabled]="actionLoading"
+              (click)="handlePrimaryAction()"
+            >
+              <span *ngIf="!actionLoading">{{ primaryActionLabel }}</span>
+              <span *ngIf="actionLoading" class="course-detail-page__loading-inline">
+                <span class="btn-spinner"></span>
+                Traitement...
+              </span>
+            </button>
+
+            <button type="button" class="course-detail-page__ghost-action" (click)="goToSecondaryAction()">
+              {{ secondaryActionLabel }}
+            </button>
+          </div>
+
+          <div class="course-detail-page__meta-row">
+            <span class="course-detail-page__meta-pill">{{ course.formateurNom || 'Formateur' }}</span>
+            <span class="course-detail-page__meta-pill">{{ course.sousCategorieNom || 'Parcours guide' }}</span>
+            <span class="course-detail-page__meta-pill" *ngIf="isCourseEnrolled(course.id)">Deja dans tes inscriptions</span>
+          </div>
+        </div>
+
+        <aside class="course-detail-page__hero-card">
+          <img [src]="getCourseImage(course, course.categorieId || 0)" [alt]="course.titre" class="course-detail-page__hero-image" />
+
+          <div class="course-detail-page__hero-summary">
+            <div class="course-detail-page__price">{{ getCoursePriceLabel(course) }}</div>
+            <div class="course-detail-page__rating">
+              <span *ngFor="let star of [1, 2, 3, 4, 5]" [class.active]="star <= displayedRating">&#9733;</span>
+              <strong>{{ ratingLabel }}</strong>
+            </div>
+            <p>
+              <strong>Acces au contenu:</strong>
+              <span *ngIf="isCourseEnrolled(course.id)"> tu peux poursuivre ce cours depuis ton espace etudiant.</span>
+              <span *ngIf="!isCourseEnrolled(course.id)"> programme visible publiquement, contenu complet apres connexion et inscription.</span>
+            </p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="course-detail-page__grid">
+        <div class="course-detail-page__main">
+          <article class="course-detail-card">
+            <div class="course-detail-card__head">
+              <div>
+                <span class="course-detail-card__eyebrow">Programme</span>
+                <h2>Ce que contient cette formation</h2>
+              </div>
+              <span class="course-detail-card__badge">{{ lessonPreviews.length }} lecon<span *ngIf="lessonPreviews.length !== 1">s</span></span>
+            </div>
+
+            <div *ngIf="!lessonPreviews.length" class="course-detail-card__empty">
+              Le programme detaille sera disponible tres bientot.
+            </div>
+
+            <div *ngIf="lessonPreviews.length" class="course-detail-page__lesson-list">
+              <article *ngFor="let lesson of lessonPreviews" class="course-detail-page__lesson-card">
+                <div class="course-detail-page__lesson-order">{{ lesson.ordre }}</div>
+                <div class="course-detail-page__lesson-body">
+                  <h3>{{ lesson.titre }}</h3>
+                  <p>{{ lesson.description || 'Contenu structure pour avancer progressivement sur ce module.' }}</p>
+                </div>
+                <div class="course-detail-page__lesson-lock">Preview</div>
+              </article>
+            </div>
+          </article>
+
+          <article class="course-detail-card">
+            <div class="course-detail-card__head">
+              <div>
+                <span class="course-detail-card__eyebrow">Avis</span>
+                <h2>Ce que disent les apprenants</h2>
+              </div>
+              <span class="course-detail-card__badge">{{ reviewSummaryLabel }}</span>
+            </div>
+
+            <div *ngIf="!reviews.length" class="course-detail-card__empty">
+              Aucun avis n a encore ete publie sur cette formation.
+            </div>
+
+            <div *ngIf="reviews.length" class="course-detail-page__review-list">
+              <article *ngFor="let review of reviews" class="course-detail-page__review-card">
+                <div class="course-detail-page__review-head">
+                  <div>
+                    <h3>{{ review.etudiantNom }}</h3>
+                    <p>{{ getReviewDateLabel(review) }}</p>
+                  </div>
+                  <div class="course-detail-page__review-stars">
+                    <span *ngFor="let star of [1, 2, 3, 4, 5]" [class.active]="star <= review.note">&#9733;</span>
+                  </div>
+                </div>
+                <p class="course-detail-page__review-text">
+                  {{ review.commentaire || 'Experience positive partagee par cet apprenant.' }}
+                </p>
+              </article>
+            </div>
+          </article>
+        </div>
+
+        <aside class="course-detail-page__side">
+          <article class="course-detail-card course-detail-card--sticky">
+            <div class="course-detail-card__head">
+              <div>
+                <span class="course-detail-card__eyebrow">Acces</span>
+                <h2>Comment continuer</h2>
+              </div>
+            </div>
+
+            <ul class="course-detail-page__steps">
+              <li>Explore le programme et les avis librement.</li>
+              <li>Connecte-toi avec un compte etudiant pour t inscrire.</li>
+              <li *ngIf="isPaidCourse(course)">Envoie ton code de paiement pour validation admin.</li>
+              <li *ngIf="!isPaidCourse(course)">L inscription est gratuite et immediate dans ton espace.</li>
+            </ul>
+
+            <button type="button" class="e-btn course-detail-page__side-action" (click)="handlePrimaryAction()">
+              {{ primaryActionLabel }}
+            </button>
+          </article>
+
+          <article *ngIf="relatedCourses.length" class="course-detail-card">
+            <div class="course-detail-card__head">
+              <div>
+                <span class="course-detail-card__eyebrow">Suggestions</span>
+                <h2>Formations similaires</h2>
+              </div>
+            </div>
+
+            <div class="course-detail-page__related-list">
+              <article *ngFor="let relatedCourse of relatedCourses; let i = index" class="course-detail-page__related-card" (click)="navigateToCourse(relatedCourse.id)">
+                <img [src]="getRelatedCourseImage(relatedCourse, i)" [alt]="relatedCourse.titre" />
+                <div>
+                  <h3>{{ relatedCourse.titre }}</h3>
+                  <p>{{ relatedCourse.formateurNom || 'Formateur' }}</p>
+                  <span>{{ getCoursePriceLabel(relatedCourse) }}</span>
+                </div>
+              </article>
+            </div>
+          </article>
+        </aside>
+      </section>
+    </ng-container>
+  </div>
+</section>
+
+<div *ngIf="showPaymentModal && course" class="course-detail-payment-overlay" (click)="closePaymentModal()">
+  <div class="course-detail-payment-modal" (click)="$event.stopPropagation()">
+    <div class="course-detail-payment-modal__icon">TND</div>
+    <h3>Finaliser le paiement</h3>
+    <p><strong>{{ course.titre }}</strong><br />Montant: {{ getCoursePriceLabel(course) }}</p>
+
+    <div class="course-detail-payment-modal__options">
+      <button type="button" class="course-detail-payment-modal__option course-detail-payment-modal__option--disabled" disabled>
+        <strong>Carte bancaire</strong>
+        <span>Bientot disponible</span>
+      </button>
+      <div class="course-detail-payment-modal__option course-detail-payment-modal__option--active">
+        <strong>Code de paiement</strong>
+        <span>Apres transfert bancaire, saisis le code fourni.</span>
+      </div>
+    </div>
+
+    <label class="course-detail-payment-modal__field">
+      <span>Code de paiement</span>
+      <input type="text" [(ngModel)]="paymentCode" placeholder="Ex: PAY-2026-001" />
+    </label>
+
+    <div *ngIf="paymentError" class="course-detail-payment-modal__error">{{ paymentError }}</div>
+
+    <div class="course-detail-payment-modal__actions">
+      <button type="button" class="course-detail-payment-modal__cancel" (click)="closePaymentModal()">Annuler</button>
+      <button type="button" class="course-detail-payment-modal__submit" (click)="submitPaymentCode()" [disabled]="paymentLoading">
+        {{ paymentLoading ? 'Envoi...' : 'Envoyer le code' }}
+      </button>
+    </div>
+  </div>
+</div>

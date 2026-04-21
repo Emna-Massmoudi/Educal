@@ -1,0 +1,309 @@
+<section class="hero__area hero__height d-flex align-items-center grey-bg-2 p-relative home-hero">
+  <div class="hero__shape">
+    <img class="hero-1-circle" src="assets/img/shape/hero/hero-1-circle.png" alt="" />
+    <img class="hero-1-circle-2" src="assets/img/shape/hero/hero-1-circle-2.png" alt="" />
+    <img class="hero-1-dot-2" src="assets/img/shape/hero/hero-1-dot-2.png" alt="" />
+  </div>
+
+  <div class="container">
+    <div class="hero__content-wrapper mt-90">
+      <div class="row align-items-center">
+        <div class="col-xl-6 col-lg-6 col-md-12">
+          <div class="hero__content p-relative z-index-1">
+            <h1 class="hero__title">
+              <span>Apprenez sans limites</span>
+              <span class="yellow-shape">
+                avec Educal
+                <img src="assets/img/shape/yellow-bg.png" alt="" />
+              </span>
+              - votre plateforme e-learning interactive.
+            </h1>
+
+            <p>
+              Explorez un catalogue de formations variees, suivez vos cours en ligne
+              et progressez a votre rythme avec un accompagnement personnalise.
+            </p>
+
+            <div class="home-hero__actions">
+              <a *ngIf="!isAuthenticated" [routerLink]="['/login']" class="e-btn" id="hero-login">Se connecter</a>
+              <a *ngIf="!isAuthenticated" [routerLink]="['/register']" class="e-btn e-btn-border" id="hero-register">Creer un compte</a>
+              <a *ngIf="isAuthenticated" [routerLink]="[dashboardRoute]" class="e-btn" id="hero-dashboard">Acceder a mon espace</a>
+              <a [routerLink]="['/home']" fragment="categories" class="link-btn">
+                Explorer le catalogue
+                <i class="far fa-arrow-right"></i>
+                <i class="far fa-arrow-right"></i>
+              </a>
+            </div>
+
+            <div class="home-hero__stats">
+              <div class="home-hero__stat">
+                <strong>{{ categories.length }}</strong>
+                <span>categories disponibles</span>
+              </div>
+              <div class="home-hero__stat">
+                <strong>{{ publishedCourses.length }}</strong>
+                <span>cours publies</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-6 col-lg-6 col-md-12">
+          <div class="hero__thumb d-flex p-relative">
+            <div class="hero__thumb-shape">
+              <img class="hero-1-dot" src="assets/img/shape/hero/hero-1-dot.png" alt="" />
+              <img class="hero-1-circle-3" src="assets/img/shape/hero/hero-1-circle-3.png" alt="" />
+              <img class="hero-1-circle-4" src="assets/img/shape/hero/hero-1-circle-4.png" alt="" />
+            </div>
+
+            <div class="hero__thumb-big mr-30">
+              <img src="assets/img/hero/hero-1.jpg" alt="Plateforme Educal" />
+              <div class="hero__quote hero__quote-animation">
+                <span>Formations de qualite</span>
+                <h4>Apprenez a votre rythme</h4>
+              </div>
+            </div>
+
+            <div class="hero__thumb-sm mt-50 d-none d-lg-block">
+              <img src="assets/img/hero/hero-sm-1.jpg" alt="Apprentissage en ligne" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="home-features pt-115 pb-90">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-6 offset-xl-3 col-lg-8 offset-lg-2">
+        <div class="section__title-wrapper text-center mb-55">
+          <span class="section__sub-title">Pourquoi Educal</span>
+          <h2 class="section__title">Une plateforme concue pour vous</h2>
+          <p>Decouvrez les avantages d'apprendre et d'enseigner avec Educal.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row home-grid-row">
+      <div *ngFor="let item of highlights; let i = index" class="col-lg-4 col-md-6 d-flex">
+        <article class="home-feature-card mb-30">
+          <div class="home-feature-card__eyebrow">Avantage {{ i + 1 }}</div>
+          <div class="home-card-body">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="categories" class="home-categories pb-90">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-6 offset-xl-3 col-lg-8 offset-lg-2">
+        <div class="section__title-wrapper text-center mb-55">
+          <span class="section__sub-title">Nos categories</span>
+          <h2 class="section__title">Explorez nos domaines de formation</h2>
+          <p>Parcourez les differentes categories et trouvez la formation qui correspond a vos objectifs.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row home-grid-row">
+      <div *ngIf="categoriesLoading" class="col-12">
+        <div class="home-empty-state">
+          <span class="btn-spinner btn-spinner--dark"></span>
+          <span>Chargement des categories...</span>
+        </div>
+      </div>
+
+      <div *ngIf="!categoriesLoading && categoriesError" class="col-12">
+        <div class="home-empty-state">
+          <span>Les categories ne sont pas disponibles pour le moment.</span>
+          <button type="button" class="home-inline-action" (click)="retryCategories()" id="retry-categories">Reessayer</button>
+        </div>
+      </div>
+
+      <div *ngIf="!categoriesLoading && !categories.length && !categoriesError" class="col-12">
+        <div class="home-empty-state">Aucune categorie disponible pour le moment.</div>
+      </div>
+
+      <div *ngFor="let category of categories; let i = index" class="col-xl-4 col-lg-4 col-md-6 d-flex">
+        <article class="home-category-card mb-30">
+          <div class="home-category-card__header">
+            <div class="home-category-card__icon">
+              <img [src]="getCategoryIcon(i)" [alt]="category.nom" />
+            </div>
+            <span class="home-category-card__badge">Formation</span>
+          </div>
+
+          <div class="home-card-body">
+            <h3>{{ category.nom }}</h3>
+            <p>{{ category.description || 'Categorie disponible sur la plateforme.' }}</p>
+          </div>
+
+          <div class="home-card-footer">
+            <span class="home-card-meta">{{ category.sousCategorieCount || 0 }} sous-categories</span>
+            <span class="home-card-link">
+              Voir les formations
+              <i class="far fa-arrow-right"></i>
+            </span>
+          </div>
+          <a
+            [routerLink]="['/categories', category.id]"
+            [attr.aria-label]="'Voir les formations de ' + category.nom"
+            class="home-card-stretched-link"
+          ></a>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="courses" class="course__area grey-bg-2 pt-115 pb-90">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-6 offset-xl-3 col-lg-8 offset-lg-2">
+        <div class="section__title-wrapper text-center mb-55">
+          <span class="section__sub-title">Top formations</span>
+          <h2 class="section__title">Les 6 formations les mieux notees</h2>
+          <p>
+            Une selection des cours les plus apprecies par les apprenants, avec
+            acces rapide a l inscription et a votre espace.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!isAuthenticated" class="home-cta-banner">
+      <div>
+        <strong>Envie de commencer ?</strong>
+        <p>Connectez-vous pour acceder aux details des cours et vous inscrire.</p>
+      </div>
+      <a [routerLink]="['/login']" class="e-btn" id="courses-login">Se connecter</a>
+    </div>
+
+    <div *ngIf="enrollmentFeedbackMessage" class="home-feedback-banner" [ngClass]="'home-feedback-banner--' + enrollmentFeedbackTone">
+      <span>{{ enrollmentFeedbackMessage }}</span>
+    </div>
+
+    <div *ngIf="coursesLoading" class="home-empty-state">
+      <span class="btn-spinner btn-spinner--dark"></span>
+      <span>Chargement des cours...</span>
+    </div>
+
+    <div *ngIf="!coursesLoading && coursesError" class="home-empty-state">
+      <span>Les cours ne sont pas disponibles pour le moment.</span>
+      <button type="button" class="home-inline-action" (click)="retryPublishedCourses()" id="retry-courses">Reessayer</button>
+    </div>
+
+    <div *ngIf="!coursesLoading && !publishedCourses.length && !coursesError" class="home-empty-state">
+      Aucun cours publie pour le moment. Revenez bientot !
+    </div>
+
+    <div *ngIf="publishedCourses.length" class="row home-grid-row">
+      <div *ngFor="let course of publishedCourses; let i = index" class="col-xl-4 col-lg-4 col-md-6 d-flex">
+        <article class="course__item white-bg mb-30 fix home-course-card">
+          <div class="course__thumb w-img p-relative fix home-course-card__thumb">
+            <a [routerLink]="['/formations', course.id]">
+              <img [src]="getCourseImage(course, i)" [alt]="course.titre" />
+            </a>
+            <div class="home-course-card__overlay">
+              <span class="home-course-card__pill" [class]="getBadgeClass(i)">{{ course.categorieNom || 'Formation' }}</span>
+              <span class="home-course-card__pill home-course-card__pill--soft">{{ getCourseLevelLabel(course) }}</span>
+            </div>
+          </div>
+
+          <div class="course__content home-course-card__content">
+            <div class="course__meta d-flex align-items-center justify-content-between">
+              <div class="course__lesson">
+                <span><i class="far fa-book-alt"></i>{{ course.duree || 'Duree flexible' }}</span>
+              </div>
+              <div class="course__rating">
+                <span><i class="icon_star"></i>{{ getCourseRatingLabel(course) }}</span>
+              </div>
+            </div>
+
+            <div class="home-course-card__submeta">
+              <span class="home-course-card__track">{{ course.sousCategorieNom || 'Parcours guide' }}</span>
+              <span class="home-course-card__reviews">{{ getCourseRatingHint(course) }}</span>
+            </div>
+
+            <h3 class="course__title">
+              <a [routerLink]="['/formations', course.id]">{{ course.titre }}</a>
+            </h3>
+
+            <p class="home-course-card__excerpt">{{ getCourseExcerpt(course) }}</p>
+
+            <div class="course__teacher d-flex align-items-center">
+              <div class="course__teacher-thumb mr-15">
+                <img src="assets/img/course/teacher/teacher-1.jpg" alt="" />
+              </div>
+              <h6>{{ course.formateurNom || 'Formateur' }}</h6>
+            </div>
+            <div class="home-price-pill">{{ getCoursePriceLabel(course) }}</div>
+          </div>
+
+          <div class="course__more d-flex justify-content-between align-items-center home-course-card__footer">
+            <div class="course__status d-flex align-items-center">
+              <span class="home-card-meta" [class.home-card-meta--locked]="getCourseMetaLocked(course)">
+                {{ getCourseMetaLabel(course) }}
+              </span>
+            </div>
+            <div class="course__btn">
+              <button
+                type="button"
+                class="home-card-action"
+                [disabled]="isEnrolling(course.id)"
+                (click)="handleCourseAction(course)"
+              >
+                <span *ngIf="!isEnrolling(course.id)">{{ getCourseActionLabel(course) }}</span>
+                <span *ngIf="isEnrolling(course.id)" class="home-card-action__loading">
+                  <span class="btn-spinner"></span>
+                  Inscription...
+                </span>
+                <i class="far fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div *ngIf="showPaymentCourse" class="home-payment-overlay" (click)="closePaymentModal()">
+  <div class="home-payment-modal" (click)="$event.stopPropagation()">
+    <div class="home-payment-modal__icon">TND</div>
+    <h3>Finaliser le paiement</h3>
+    <p><strong>{{ showPaymentCourse.titre }}</strong><br />Montant: {{ getCoursePriceLabel(showPaymentCourse) }}</p>
+
+    <div class="home-payment-options">
+      <button type="button" class="home-payment-option disabled" disabled>
+        <strong>Carte bancaire</strong>
+        <span>Bientot disponible</span>
+      </button>
+      <div class="home-payment-option active">
+        <strong>Code de paiement</strong>
+        <span>Apres transfert bancaire, saisissez le code fourni.</span>
+      </div>
+    </div>
+
+    <label class="home-payment-field">
+      <span>Code de paiement</span>
+      <input type="text" [(ngModel)]="paymentCode" placeholder="Ex: PAY-2026-001" />
+    </label>
+
+    <div *ngIf="paymentError" class="home-payment-error">{{ paymentError }}</div>
+
+    <div class="home-payment-actions">
+      <button type="button" class="home-payment-cancel" (click)="closePaymentModal()">Annuler</button>
+      <button type="button" class="home-payment-submit" (click)="submitPaymentCode()" [disabled]="paymentLoading">
+        {{ paymentLoading ? 'Envoi...' : 'Envoyer le code' }}
+      </button>
+    </div>
+  </div>
+</div>

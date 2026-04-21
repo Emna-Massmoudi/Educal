@@ -1,0 +1,740 @@
+<div class="teacher-layout">
+
+  <!-- ── MOBILE TOPBAR ── -->
+  <div class="mobile-topbar">
+    <button class="mobile-menu-btn" (click)="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <span class="mobile-topbar__title">Espace formateur</span>
+    <button class="btn-logout mobile-logout" (click)="logout()" title="Déconnexion">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ── SIDEBAR OVERLAY ── -->
+  <div class="sidebar-overlay" [class.visible]="mobileMenuOpen" (click)="mobileMenuOpen = false"></div>
+
+  <aside class="sidebar" [class.sidebar--open]="mobileMenuOpen">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L22 9V21H2V9L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M9 21V12H15V21" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span>EduNet</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+
+      <a class="nav-item" [class.active]="activeSection === 'formations'" (click)="activeSection = 'formations'; mobileMenuOpen = false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M4 4H20V16H4V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M8 20H16M12 16V20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M4 9H20M9 4V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Mes formations
+        <span class="nav-count">{{ mesCours.length }}</span>
+      </a>
+
+      <a class="nav-item" [class.active]="activeSection === 'etudiants'" (click)="activeSection = 'etudiants'; chargerInscriptions(); mobileMenuOpen = false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Étudiants
+        <span class="nav-count" *ngIf="inscriptionsEnAttente > 0" style="background:#ef4444">{{ inscriptionsEnAttente }}</span>
+        <span class="nav-count" *ngIf="inscriptionsEnAttente === 0">{{ totalInscriptions }}</span>
+      </a>
+
+      <a class="nav-item" [class.active]="activeSection === 'quiz'" (click)="activeSection = 'quiz'; mobileMenuOpen = false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Quiz & Leçons
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user" (click)="voirProfil()" title="Voir mon profil">
+        <div class="user-avatar">{{ initialesFormateur }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ nomFormateur }}</div>
+          <div class="user-email">{{ emailFormateur }}</div>
+        </div>
+      </div>
+      <button class="btn-logout" (click)="logout()" title="Déconnexion">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <ng-container *ngIf="activeSection === 'formations'">
+      <div class="topbar">
+        <div class="topbar-left">
+          <h1>Mes formations</h1>
+          <p class="topbar-sub">Gere, publie et ajuste tes formations depuis un espace plus clair.</p>
+        </div>
+        <button class="btn-add" (click)="openAddForm()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          Nouvelle formation
+        </button>
+      </div>
+
+      <div *ngIf="formationFeedbackMessage" class="app-alert" [ngClass]="'app-alert--' + formationFeedbackTone">
+        <span class="app-alert__icon">{{ formationFeedbackTone === 'success' ? 'OK' : formationFeedbackTone === 'error' ? '!' : 'i' }}</span>
+        <div class="app-alert__content">
+          <p class="app-alert__title">Gestion des formations</p>
+          <p class="app-alert__text">{{ formationFeedbackMessage }}</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent:#6366f1;--accent-light:#eef2ff">
+          <div class="stat-icon">📚</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ mesCours.length }}</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#10b981;--accent-light:#d1fae5">
+          <div class="stat-icon">🌍</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getCountByStatut('PUBLIE') }}</div>
+            <div class="stat-label">Publies</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#f59e0b;--accent-light:#fef3c7">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getCountByStatut('EN_ATTENTE_VALIDATION') }}</div>
+            <div class="stat-label">En attente</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--accent:#94a3b8;--accent-light:#f1f5f9">
+          <div class="stat-icon">📝</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getCountByStatut('BROUILLON') }}</div>
+            <div class="stat-label">Brouillons</div>
+          </div>
+        </div>
+        <div class="stat-card wallet-stat" style="--accent:#0f766e;--accent-light:#ccfbf1">
+          <div class="stat-icon">TND</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ walletLoading ? '...' : formatPrice(wallet.totalGagne) }}</div>
+            <div class="stat-label">Wallet formateur</div>
+            <div class="stat-sub">{{ wallet.paiementsApprouves }} paiement(s) approuve(s)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg class="search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+            <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input type="text" class="search-input" [(ngModel)]="searchQuery" placeholder="Rechercher une formation..." />
+          <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery = ''">✕</button>
+        </div>
+        <select class="filter-select" [(ngModel)]="filterStatut">
+          <option value="">Tous les statuts</option>
+          <option value="BROUILLON">Brouillon</option>
+          <option value="EN_ATTENTE_VALIDATION">En attente validation</option>
+          <option value="PUBLIE">Publie</option>
+          <option value="SUPPRIME">Supprime</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn" [class.active]="viewMode === 'grid'" (click)="viewMode = 'grid'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+          </button>
+          <button class="view-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+              <path d="M8 6H21M8 12H21M8 18H21M3 6H3.01M3 12H3.01M3 18H3.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="loading" class="state-box"><div class="spinner"></div><span>Chargement...</span></div>
+      <div *ngIf="!loading && errorMessage" class="state-box error-box">⚠️ {{ errorMessage }}</div>
+
+      <div *ngIf="!loading && !errorMessage && mesCours.length === 0" class="empty-state">
+        <div class="empty-emoji">📭</div>
+        <h3>Aucune formation creee</h3>
+        <p>Commence par creer ta premiere formation pour lancer ton espace enseignant.</p>
+        <button class="btn-add" (click)="openAddForm()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          Creer une formation
+        </button>
+      </div>
+
+      <div *ngIf="!loading && !errorMessage && mesCours.length > 0 && filteredCours().length === 0" class="empty-state">
+        <div class="empty-emoji">🔍</div>
+        <h3>Aucun resultat</h3>
+        <p>Aucune formation ne correspond a tes filtres actuels.</p>
+        <button class="btn-cancel" (click)="searchQuery = ''; filterStatut = ''">Effacer les filtres</button>
+      </div>
+
+      <div *ngIf="!loading && !errorMessage && filteredCours().length > 0 && viewMode === 'grid'" class="cours-grid">
+        <div *ngFor="let c of filteredCours(); let i = index" class="cours-card" [style.--delay]="i * 70 + 'ms'">
+          <div class="card-banner" [style.background]="getBannerGradient(c.categorieId)">
+            <img
+              *ngIf="c.imageUrl"
+              [src]="c.imageUrl.startsWith('http') ? c.imageUrl : 'http://localhost:8081' + c.imageUrl"
+              class="card-banner-img"
+              [alt]="c.titre"
+              (error)="$any($event.target).style.display='none'"
+            />
+            <div class="card-emoji" [class.hidden]="c.imageUrl">{{ getIcon(c.categorieNom) }}</div>
+            <div class="card-actions">
+              <button class="act-btn act-edit" (click)="openEditForm(c)" title="Modifier">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <button class="act-btn act-del" (click)="confirmDelete(c)" title="Supprimer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7H20M10 11V16M14 11V16M5 7L6 19a2 2 0 002 2h8a2 2 0 002-2L19 7M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+            <span class="status-badge" [ngClass]="getStatutClass(c.etatPublication)">{{ getStatutLabel(c.etatPublication) }}</span>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="chip-cat">{{ c.categorieNom }}</span>
+              <span class="chip-sous">{{ c.sousCategorieNom }}</span>
+              <span class="chip-price">{{ formatPrice(c.prix) }}</span>
+            </div>
+            <h3 class="card-title">{{ c.titre }}</h3>
+            <p class="card-desc">{{ c.description || 'Aucune description disponible.' }}</p>
+            <div class="card-footer">
+              <span class="card-niveau" *ngIf="c.niveau">🎯 {{ c.niveau }}</span>
+              <span class="card-duree" *ngIf="c.duree">⏱ {{ c.duree }}</span>
+              <span class="card-price">{{ formatPrice(c.prix) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && !errorMessage && filteredCours().length > 0 && viewMode === 'list'" class="cours-list">
+        <div *ngFor="let c of filteredCours(); let i = index" class="cours-row" [style.--delay]="i * 55 + 'ms'">
+          <div class="row-emoji">{{ getIcon(c.categorieNom) }}</div>
+          <div class="row-main">
+            <div class="row-title">{{ c.titre }}</div>
+            <div class="row-chips">
+              <span class="chip-cat">{{ c.categorieNom }}</span>
+              <span class="chip-sous">{{ c.sousCategorieNom }}</span>
+              <span class="chip-price">{{ formatPrice(c.prix) }}</span>
+            </div>
+          </div>
+          <span class="status-pill" [ngClass]="getStatutClass(c.etatPublication)">{{ getStatutLabel(c.etatPublication) }}</span>
+          <div class="row-actions">
+            <button class="row-btn edit" (click)="openEditForm(c)" title="Modifier">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="row-btn danger" (click)="confirmDelete(c)" title="Supprimer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <path d="M4 7H20M10 11V16M14 11V16M5 7L6 19a2 2 0 002 2h8a2 2 0 002-2L19 7M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="activeSection === 'etudiants'">
+      <div class="topbar">
+        <div class="topbar-left">
+          <h1>Gestion des etudiants</h1>
+          <p class="topbar-sub">Accepte ou refuse les demandes d'inscription a tes cours.</p>
+        </div>
+      </div>
+
+      <div *ngIf="etudiantFeedbackMessage" class="app-alert" [ngClass]="'app-alert--' + etudiantFeedbackTone">
+        <span class="app-alert__icon">{{ etudiantFeedbackTone === 'success' ? 'OK' : etudiantFeedbackTone === 'error' ? '!' : 'i' }}</span>
+        <div class="app-alert__content">
+          <p class="app-alert__title">Gestion des inscriptions</p>
+          <p class="app-alert__text">{{ etudiantFeedbackMessage }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="inscLoading" class="state-box"><div class="spinner"></div><span>Chargement des inscriptions...</span></div>
+
+      <div *ngIf="!inscLoading && inscriptions.length === 0" class="empty-state">
+        <div class="empty-emoji">📭</div>
+        <h3>Aucune demande d'inscription</h3>
+        <p>Les etudiants qui s'inscrivent a tes cours apparaitront ici.</p>
+      </div>
+
+      <div *ngIf="!inscLoading && inscriptions.length > 0">
+        <div class="insc-tabs">
+          <button class="insc-tab" [class.active]="inscFilter === ''" (click)="inscFilter = ''">
+            Toutes <span class="tab-count">{{ inscriptions.length }}</span>
+          </button>
+          <button class="insc-tab" [class.active]="inscFilter === 'EN_ATTENTE'" (click)="inscFilter = 'EN_ATTENTE'">
+            ⏳ En attente <span class="tab-count warn">{{ inscriptionsEnAttente }}</span>
+          </button>
+          <button class="insc-tab" [class.active]="inscFilter === 'VALIDE'" (click)="inscFilter = 'VALIDE'">
+            ✅ Acceptees
+          </button>
+          <button class="insc-tab" [class.active]="inscFilter === 'REFUSE'" (click)="inscFilter = 'REFUSE'">
+            ❌ Refusees
+          </button>
+        </div>
+
+        <div class="insc-list">
+          <div *ngFor="let insc of filteredInscriptions(); let i = index" class="insc-card" [style.--delay]="i * 55 + 'ms'">
+            <div class="insc-avatar">{{ getInitialesFromNom(insc.etudiantNom) }}</div>
+            <div class="insc-info">
+              <div class="insc-nom">{{ insc.etudiantNom }}</div>
+              <div class="insc-cours">📚 {{ insc.coursTitre }}</div>
+              <div class="insc-date" *ngIf="insc.dateInscription">{{ insc.dateInscription | date:'dd/MM/yyyy' }}</div>
+            </div>
+            <span class="insc-statut" [ngClass]="getInscStatutClass(insc.statut)">{{ getInscStatutLabel(insc.statut) }}</span>
+            <div class="insc-actions" *ngIf="insc.statut === 'EN_ATTENTE'">
+              <button class="btn-accepter" (click)="accepterInscription(insc.id)" [disabled]="inscActionLoading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                Accepter
+              </button>
+              <button class="btn-refuser" (click)="refuserInscription(insc.id)" [disabled]="inscActionLoading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                Refuser
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="activeSection === 'quiz'">
+      <app-teacher-quiz></app-teacher-quiz>
+    </ng-container>
+
+    <div *ngIf="showAddForm" class="overlay" (click)="closeAddForm()">
+      <div class="modal modal-form" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title">
+            <div class="modal-icon green">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h3>Nouvelle formation</h3>
+              <p>Cree une formation puis soumets-la pour validation.</p>
+            </div>
+          </div>
+          <button class="close-btn" (click)="closeAddForm()">✕</button>
+        </div>
+
+        <form #addCourseForm="ngForm" (ngSubmit)="soumettreCours(addCourseForm)" novalidate>
+          <div class="modal-body">
+            <div class="field" [class.field--invalid]="shouldShowError(addTitleModel, addCourseForm)">
+              <label>Titre <span class="req">*</span></label>
+              <input
+                type="text"
+                [(ngModel)]="newCours.titre"
+                name="newTitre"
+                #addTitleModel="ngModel"
+                placeholder="Ex: Angular avance - Signals & SSR"
+                required
+                [class.is-invalid]="shouldShowError(addTitleModel, addCourseForm)"
+              />
+              <div *ngIf="shouldShowError(addTitleModel, addCourseForm)" class="field-message field-message--error">
+                <span class="field-message__dot"></span>
+                <span>{{ getRequiredError('Le titre') }}</span>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field" [class.field--invalid]="shouldShowSelectError(newCours.categorieId, addFormSubmitted)">
+                <label>Categorie <span class="req">*</span></label>
+                <select [(ngModel)]="newCours.categorieId" name="newCategorieId" (ngModelChange)="onCategorieChangeAdd()">
+                  <option [value]="0" disabled>Choisir...</option>
+                  <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+                </select>
+                <div *ngIf="shouldShowSelectError(newCours.categorieId, addFormSubmitted)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getRequiredError('La categorie') }}</span>
+                </div>
+              </div>
+              <div class="field" [class.field--invalid]="shouldShowSelectError(newCours.sousCategorieId, addFormSubmitted)">
+                <label>Sous-categorie <span class="req">*</span></label>
+                <select [(ngModel)]="newCours.sousCategorieId" name="newSousCategorieId" [disabled]="!newCours.categorieId">
+                  <option [value]="0" disabled>Choisir...</option>
+                  <option *ngFor="let sc of sousCategories" [value]="sc.id">{{ sc.nom }}</option>
+                </select>
+                <div *ngIf="shouldShowSelectError(newCours.sousCategorieId, addFormSubmitted)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getRequiredError('La sous-categorie') }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" [class.field--invalid]="shouldShowError(addDescriptionModel, addCourseForm)">
+              <label>Description <span class="req">*</span></label>
+              <textarea
+                [(ngModel)]="newCours.description"
+                name="newDescription"
+                #addDescriptionModel="ngModel"
+                rows="4"
+                placeholder="Decris le contenu, les objectifs et la valeur de la formation..."
+                required
+                [class.is-invalid]="shouldShowError(addDescriptionModel, addCourseForm)"
+              ></textarea>
+              <div *ngIf="shouldShowError(addDescriptionModel, addCourseForm)" class="field-message field-message--error">
+                <span class="field-message__dot"></span>
+                <span>{{ getRequiredError('La description') }}</span>
+              </div>
+            </div>
+
+            <div class="field-row field-row--three">
+              <div class="field">
+                <label>Niveau</label>
+                <select [(ngModel)]="newCours.niveau" name="newNiveau">
+                  <option value="debutant">Debutant</option>
+                  <option value="intermediaire">Intermediaire</option>
+                  <option value="avance">Avance</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Duree</label>
+                <input type="text" [(ngModel)]="newCours.duree" name="newDuree" placeholder="Ex: 12h30" />
+              </div>
+              <div class="field">
+                <label>Prix (TND)</label>
+                <input type="number" min="0" step="0.01" [(ngModel)]="newCours.prix" name="newPrix" placeholder="Ex: 49.00" />
+                <small class="field-hint">La plateforme garde 20%, le reste va dans ton wallet.</small>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field" [class.field--invalid]="shouldShowError(addVideoModel, addCourseForm)">
+                <label>URL video</label>
+                <input
+                  type="url"
+                  [(ngModel)]="newCours.videoUrl"
+                  name="newVideoUrl"
+                  #addVideoModel="ngModel"
+                  placeholder="https://..."
+                  pattern="https?://.+"
+                  [class.is-invalid]="shouldShowError(addVideoModel, addCourseForm)"
+                />
+                <div *ngIf="shouldShowError(addVideoModel, addCourseForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getUrlError("L'URL video") }}</span>
+                </div>
+              </div>
+              <div class="field" [class.field--invalid]="shouldShowError(addImageModel, addCourseForm)">
+                <label>URL image</label>
+                <input
+                  type="url"
+                  [(ngModel)]="newCours.imageUrl"
+                  name="newImageUrl"
+                  #addImageModel="ngModel"
+                  placeholder="https://..."
+                  pattern="https?://.+"
+                  [class.is-invalid]="shouldShowError(addImageModel, addCourseForm)"
+                />
+                <div *ngIf="shouldShowError(addImageModel, addCourseForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getUrlError("L'URL image") }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Document PDF (support de cours)</label>
+              <div class="pdf-upload-zone" (click)="pdfInput.click()" [class.has-file]="newCours.pdfUrl">
+                <input #pdfInput type="file" accept=".pdf" style="display:none" (change)="onPdfChange($event, 'new')" />
+                <div *ngIf="!newCours.pdfUrl && !pdfUploading" class="pdf-placeholder">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="12" y1="18" x2="12" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <polyline points="9 15 12 12 15 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                  <span>Clique pour televerser un PDF</span>
+                  <span class="pdf-hint">Taille maximale: 10 MB</span>
+                </div>
+                <div *ngIf="pdfUploading" class="pdf-uploading">
+                  <div class="spinner"></div>
+                  <span>Upload en cours...</span>
+                </div>
+                <div *ngIf="newCours.pdfUrl && !pdfUploading" class="pdf-ready">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="#ef4444" stroke-width="1.8"/>
+                    <polyline points="14 2 14 8 20 8" stroke="#ef4444" stroke-width="1.8"/>
+                  </svg>
+                  <span>{{ getPdfDisplayName('new') }}</span>
+                  <button class="pdf-remove" (click)="removePdf('new'); $event.stopPropagation()">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="addError" class="app-alert app-alert--error surface-feedback">
+              <span class="app-alert__icon">!</span>
+              <div class="app-alert__content">
+                <p class="app-alert__title">Soumission impossible</p>
+                <p class="app-alert__text">{{ addError }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeAddForm()">Annuler</button>
+            <button type="submit" class="btn-submit" [disabled]="addLoading || pdfUploading">
+              <span class="button-inline-content" *ngIf="addLoading">
+                <span class="btn-spinner"></span>
+                <span>Soumission en cours...</span>
+              </span>
+              <span class="button-inline-content" *ngIf="!addLoading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <span>Soumettre la formation</span>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div *ngIf="showEditForm" class="overlay" (click)="closeEditForm()">
+      <div class="modal modal-form" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title">
+            <div class="modal-icon purple">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h3>Modifier la formation</h3>
+              <p>{{ itemToEdit?.titre }}</p>
+            </div>
+          </div>
+          <button class="close-btn" (click)="closeEditForm()">✕</button>
+        </div>
+
+        <form #editCourseForm="ngForm" (ngSubmit)="mettreAJourCours(editCourseForm)" novalidate>
+          <div class="modal-body">
+            <div class="field" [class.field--invalid]="shouldShowError(editTitleModel, editCourseForm)">
+              <label>Titre <span class="req">*</span></label>
+              <input
+                type="text"
+                [(ngModel)]="editCours.titre"
+                name="editTitre"
+                #editTitleModel="ngModel"
+                placeholder="Titre de la formation"
+                required
+                [class.is-invalid]="shouldShowError(editTitleModel, editCourseForm)"
+              />
+              <div *ngIf="shouldShowError(editTitleModel, editCourseForm)" class="field-message field-message--error">
+                <span class="field-message__dot"></span>
+                <span>{{ getRequiredError('Le titre') }}</span>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field" [class.field--invalid]="shouldShowSelectError(editCours.categorieId, editFormSubmitted)">
+                <label>Categorie <span class="req">*</span></label>
+                <select [(ngModel)]="editCours.categorieId" name="editCategorieId" (ngModelChange)="onCategorieChangeEdit()">
+                  <option [value]="0" disabled>Choisir...</option>
+                  <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+                </select>
+                <div *ngIf="shouldShowSelectError(editCours.categorieId, editFormSubmitted)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getRequiredError('La categorie') }}</span>
+                </div>
+              </div>
+              <div class="field" [class.field--invalid]="shouldShowSelectError(editCours.sousCategorieId, editFormSubmitted)">
+                <label>Sous-categorie <span class="req">*</span></label>
+                <select [(ngModel)]="editCours.sousCategorieId" name="editSousCategorieId" [disabled]="!editCours.categorieId">
+                  <option [value]="0" disabled>Choisir...</option>
+                  <option *ngFor="let sc of sousCategories" [value]="sc.id">{{ sc.nom }}</option>
+                </select>
+                <div *ngIf="shouldShowSelectError(editCours.sousCategorieId, editFormSubmitted)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getRequiredError('La sous-categorie') }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" [class.field--invalid]="shouldShowError(editDescriptionModel, editCourseForm)">
+              <label>Description <span class="req">*</span></label>
+              <textarea
+                [(ngModel)]="editCours.description"
+                name="editDescription"
+                #editDescriptionModel="ngModel"
+                rows="4"
+                placeholder="Decris le contenu et les objectifs de la formation..."
+                required
+                [class.is-invalid]="shouldShowError(editDescriptionModel, editCourseForm)"
+              ></textarea>
+              <div *ngIf="shouldShowError(editDescriptionModel, editCourseForm)" class="field-message field-message--error">
+                <span class="field-message__dot"></span>
+                <span>{{ getRequiredError('La description') }}</span>
+              </div>
+            </div>
+
+            <div class="field-row field-row--three">
+              <div class="field">
+                <label>Niveau</label>
+                <select [(ngModel)]="editCours.niveau" name="editNiveau">
+                  <option value="debutant">Debutant</option>
+                  <option value="intermediaire">Intermediaire</option>
+                  <option value="avance">Avance</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Duree</label>
+                <input type="text" [(ngModel)]="editCours.duree" name="editDuree" placeholder="Ex: 12h30" />
+              </div>
+              <div class="field">
+                <label>Prix (TND)</label>
+                <input type="number" min="0" step="0.01" [(ngModel)]="editCours.prix" name="editPrix" placeholder="Ex: 49.00" />
+                <small class="field-hint">0 TND garde une formation gratuite.</small>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field" [class.field--invalid]="shouldShowError(editVideoModel, editCourseForm)">
+                <label>URL video</label>
+                <input
+                  type="url"
+                  [(ngModel)]="editCours.videoUrl"
+                  name="editVideoUrl"
+                  #editVideoModel="ngModel"
+                  placeholder="https://..."
+                  pattern="https?://.+"
+                  [class.is-invalid]="shouldShowError(editVideoModel, editCourseForm)"
+                />
+                <div *ngIf="shouldShowError(editVideoModel, editCourseForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getUrlError("L'URL video") }}</span>
+                </div>
+              </div>
+              <div class="field" [class.field--invalid]="shouldShowError(editImageModel, editCourseForm)">
+                <label>URL image</label>
+                <input
+                  type="url"
+                  [(ngModel)]="editCours.imageUrl"
+                  name="editImageUrl"
+                  #editImageModel="ngModel"
+                  placeholder="https://..."
+                  pattern="https?://.+"
+                  [class.is-invalid]="shouldShowError(editImageModel, editCourseForm)"
+                />
+                <div *ngIf="shouldShowError(editImageModel, editCourseForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getUrlError("L'URL image") }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Document PDF (support de cours)</label>
+              <div class="pdf-upload-zone" (click)="pdfInputEdit.click()" [class.has-file]="editCours.pdfUrl">
+                <input #pdfInputEdit type="file" accept=".pdf" style="display:none" (change)="onPdfChange($event, 'edit')" />
+                <div *ngIf="!editCours.pdfUrl && !pdfUploading" class="pdf-placeholder">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="12" y1="18" x2="12" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <polyline points="9 15 12 12 15 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                  <span>Clique pour televerser un PDF</span>
+                  <span class="pdf-hint">Taille maximale: 10 MB</span>
+                </div>
+                <div *ngIf="pdfUploading" class="pdf-uploading">
+                  <div class="spinner"></div>
+                  <span>Upload en cours...</span>
+                </div>
+                <div *ngIf="editCours.pdfUrl && !pdfUploading" class="pdf-ready">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="#ef4444" stroke-width="1.8"/>
+                    <polyline points="14 2 14 8 20 8" stroke="#ef4444" stroke-width="1.8"/>
+                  </svg>
+                  <span>{{ getPdfDisplayName('edit') }}</span>
+                  <button class="pdf-remove" (click)="removePdf('edit'); $event.stopPropagation()">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="editError" class="app-alert app-alert--error surface-feedback">
+              <span class="app-alert__icon">!</span>
+              <div class="app-alert__content">
+                <p class="app-alert__title">Modification impossible</p>
+                <p class="app-alert__text">{{ editError }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeEditForm()">Annuler</button>
+            <button type="submit" class="btn-submit btn-edit" [disabled]="editLoading || pdfUploading">
+              <span class="button-inline-content" *ngIf="editLoading">
+                <span class="btn-spinner"></span>
+                <span>Enregistrement...</span>
+              </span>
+              <span class="button-inline-content" *ngIf="!editLoading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <polyline points="20 6 9 17 4 12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <span>Enregistrer les modifications</span>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div *ngIf="showDeleteConfirm" class="overlay" (click)="closeDeleteConfirm()">
+      <div class="modal modal-confirm" (click)="$event.stopPropagation()">
+        <div class="modal-icon-big">🗑️</div>
+        <h3>Supprimer cette formation ?</h3>
+        <p>Tu vas supprimer <strong>{{ itemToDelete?.titre }}</strong>. Cette action est irreversible.</p>
+        <div class="modal-warn">⚠️ Action irreversible</div>
+        <div class="confirm-footer">
+          <button class="cf-cancel" (click)="closeDeleteConfirm()">Annuler</button>
+          <button class="cf-delete" (click)="supprimerCours()" [disabled]="deleteLoading">
+            <span class="button-inline-content" *ngIf="deleteLoading">
+              <span class="btn-spinner"></span>
+              <span>Suppression...</span>
+            </span>
+            <span *ngIf="!deleteLoading">Supprimer</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

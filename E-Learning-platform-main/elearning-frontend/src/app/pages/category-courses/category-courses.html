@@ -1,0 +1,160 @@
+<app-page-hero
+  [eyebrow]="eyebrow"
+  [title]="pageTitle"
+  [subtitle]="pageSubtitle"
+  backgroundImage="assets/img/page-title/page-title-2.jpg"
+></app-page-hero>
+
+<section class="category-courses-page pt-115 pb-90">
+  <div class="container">
+    <div class="category-courses-page__toolbar">
+      <a [routerLink]="['/home']" fragment="categories" class="category-courses-page__back-link">
+        <i class="far fa-arrow-left"></i>
+        Retour aux categories
+      </a>
+
+      <div *ngIf="category" class="category-courses-page__summary">
+        <span class="category-courses-page__badge">{{ filteredCourses.length }} formation<span *ngIf="filteredCourses.length !== 1">s</span></span>
+        <span class="category-courses-page__badge category-courses-page__badge--soft">
+          {{ category.sousCategorieCount || 0 }} sous-categories
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="!isAuthenticated" class="category-courses-page__cta">
+      <div>
+        <strong>Consultez le catalogue librement.</strong>
+        <p>Pour rejoindre un cours ou acceder a votre espace complet, connectez-vous a votre compte.</p>
+      </div>
+      <a [routerLink]="['/login']" class="e-btn">Se connecter</a>
+    </div>
+
+    <div *ngIf="enrollmentFeedbackMessage" class="category-courses-page__feedback" [ngClass]="'category-courses-page__feedback--' + enrollmentFeedbackTone">
+      <span>{{ enrollmentFeedbackMessage }}</span>
+    </div>
+
+    <div *ngIf="loading" class="category-courses-page__state">
+      <span class="btn-spinner btn-spinner--dark"></span>
+      <span>Chargement des formations...</span>
+    </div>
+
+    <div *ngIf="!loading && error" class="category-courses-page__state">
+      <span>Impossible de charger cette categorie pour le moment.</span>
+      <button type="button" class="category-courses-page__retry" (click)="retry()">Reessayer</button>
+    </div>
+
+    <div *ngIf="!loading && !error && !category" class="category-courses-page__state">
+      <span>Cette categorie est introuvable ou n est plus disponible.</span>
+      <a [routerLink]="['/home']" fragment="categories" class="category-courses-page__retry">Retour au catalogue</a>
+    </div>
+
+    <div *ngIf="!loading && !error && category && !courses.length" class="category-courses-page__state">
+      <span>Aucune formation n est encore publiee dans cette categorie.</span>
+      <a [routerLink]="['/home']" fragment="courses" class="category-courses-page__retry">Voir les autres formations</a>
+    </div>
+
+    <div *ngIf="courses.length && hasSousCategorieFilter" class="category-courses-page__filters">
+      <div class="category-courses-page__filters-head">
+        <div>
+          <span class="category-courses-page__filters-label">Filtrer par sous-categorie</span>
+          <h3>{{ selectedSousCategorieName }}</h3>
+        </div>
+        <span class="category-courses-page__filters-count">{{ filteredCourses.length }} resultat<span *ngIf="filteredCourses.length !== 1">s</span></span>
+      </div>
+
+      <div class="category-courses-page__filter-list">
+        <button
+          type="button"
+          class="category-courses-page__filter-chip"
+          [class.category-courses-page__filter-chip--active]="selectedSousCategorieId === null"
+          (click)="selectSousCategorie(null)"
+        >
+          Toutes
+        </button>
+
+        <button
+          *ngFor="let sousCategorie of availableSousCategories"
+          type="button"
+          class="category-courses-page__filter-chip"
+          [class.category-courses-page__filter-chip--active]="selectedSousCategorieId === sousCategorie.id"
+          (click)="selectSousCategorie(sousCategorie.id ?? null)"
+        >
+          {{ sousCategorie.nom }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="courses.length && !filteredCourses.length" class="category-courses-page__state">
+      <span>Aucune formation n est disponible pour cette sous-categorie.</span>
+      <button type="button" class="category-courses-page__retry" (click)="selectSousCategorie(null)">Afficher toutes les formations</button>
+    </div>
+
+    <div *ngIf="filteredCourses.length" class="row category-courses-page__grid">
+      <div *ngFor="let course of filteredCourses; let i = index" class="col-xl-4 col-lg-4 col-md-6 d-flex">
+        <article class="course__item white-bg fix category-courses-page__card">
+          <div class="course__thumb w-img p-relative fix category-courses-page__thumb">
+            <a [routerLink]="['/formations', course.id]">
+              <img [src]="getCourseImage(course, i)" [alt]="course.titre" />
+            </a>
+
+            <div class="category-courses-page__overlay">
+              <span class="category-courses-page__pill" [class]="getBadgeClass(i)">
+                {{ course.categorieNom || category?.nom || 'Formation' }}
+              </span>
+              <span class="category-courses-page__pill category-courses-page__pill--soft">
+                {{ getCourseLevelLabel(course) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="course__content category-courses-page__content">
+            <div class="course__meta d-flex align-items-center justify-content-between">
+              <div class="course__lesson">
+                <span><i class="far fa-book-alt"></i>{{ course.duree || 'Duree flexible' }}</span>
+              </div>
+              <div class="course__rating">
+                <span><i class="icon_star"></i>{{ course.sousCategorieNom || 'Parcours guide' }}</span>
+              </div>
+            </div>
+
+            <h3 class="course__title">
+              <a [routerLink]="['/formations', course.id]">{{ course.titre }}</a>
+            </h3>
+
+            <p class="category-courses-page__excerpt">{{ getCourseExcerpt(course) }}</p>
+
+            <div class="course__teacher d-flex align-items-center">
+              <div class="course__teacher-thumb mr-15">
+                <img src="assets/img/course/teacher/teacher-1.jpg" alt="" />
+              </div>
+              <h6>{{ course.formateurNom || 'Formateur' }}</h6>
+            </div>
+          </div>
+
+          <div class="course__more d-flex justify-content-between align-items-center category-courses-page__footer">
+            <div class="course__status d-flex align-items-center">
+              <span class="category-courses-page__meta" [class.category-courses-page__meta--locked]="getCourseMetaLocked(course)">
+                {{ getCourseMetaLabel(course) }}
+              </span>
+            </div>
+            <div class="course__btn">
+              <button
+                type="button"
+                class="category-courses-page__action"
+                [disabled]="isEnrolling(course.id)"
+                (click)="handleCourseAction(course)"
+              >
+                <span *ngIf="!isEnrolling(course.id)">{{ getCourseActionLabel(course) }}</span>
+                <span *ngIf="isEnrolling(course.id)" class="category-courses-page__action-loading">
+                  <span class="btn-spinner"></span>
+                  Inscription...
+                </span>
+                <i class="far fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>

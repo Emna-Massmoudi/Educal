@@ -1,0 +1,124 @@
+<section class="signup__area po-rel-z1 pt-100 pb-145 auth-screen">
+  <div class="sign__shape">
+    <img class="man-1" src="assets/img/icon/sign/man-1.png" alt="" />
+    <img class="man-2" src="assets/img/icon/sign/man-2.png" alt="" />
+    <img class="circle" src="assets/img/icon/sign/circle.png" alt="" />
+    <img class="zigzag" src="assets/img/icon/sign/zigzag.png" alt="" />
+    <img class="dot" src="assets/img/icon/sign/dot.png" alt="" />
+    <img class="bg" src="assets/img/icon/sign/sign-up.png" alt="" />
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-xxl-8 offset-xxl-2 col-xl-8 offset-xl-2">
+        <div class="section__title-wrapper text-center mb-10">
+          <span class="section__sub-title">Bon retour</span>
+          <h2 class="section__title">Connectez-vous &agrave; votre espace</h2>
+         
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xxl-6 offset-xxl-3 col-xl-6 offset-xl-3 col-lg-8 offset-lg-2">
+        <div class="sign__wrapper white-bg">
+          <div class="sign__header mb-35 text-center">
+            <p>Saisissez vos identifiants pour continuer</p>
+          </div>
+
+          <div class="sign__form">
+            <form #loginForm="ngForm" (ngSubmit)="onLogin(loginForm)" novalidate>
+              <div class="sign__input-wrapper mb-25" [class.sign__input-wrapper--invalid]="shouldShowError(emailModel, loginForm)">
+                <h5>Adresse e-mail</h5>
+                <div class="sign__input">
+                  <input
+                    type="email"
+                    [(ngModel)]="email"
+                    name="email"
+                    #emailModel="ngModel"
+                    placeholder="exemple@email.com"
+                    required
+                    email
+                    autocomplete="email"
+                    id="login-email"
+                    [class.is-invalid]="shouldShowError(emailModel, loginForm)"
+                  />
+                 
+                </div>
+                <div *ngIf="shouldShowError(emailModel, loginForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getEmailError(emailModel) }}</span>
+                </div>
+              </div>
+
+              <div class="sign__input-wrapper mb-10" [class.sign__input-wrapper--invalid]="shouldShowError(passwordModel, loginForm)">
+                <h5>Mot de passe</h5>
+                <div class="sign__input sign__input--password">
+                  <input
+                    [type]="showPassword ? 'text' : 'password'"
+                    [(ngModel)]="motDePasse"
+                    name="motDePasse"
+                    #passwordModel="ngModel"
+                    placeholder="Saisissez votre mot de passe"
+                    required
+                    minlength="6"
+                    autocomplete="current-password"
+                    id="login-password"
+                    [class.is-invalid]="shouldShowError(passwordModel, loginForm)"
+                  />
+                  
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    (click)="togglePasswordVisibility()"
+                    [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                    [attr.aria-pressed]="showPassword"
+                  >
+                    <i class="fal" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  </button>
+                </div>
+                <div *ngIf="shouldShowError(passwordModel, loginForm)" class="field-message field-message--error">
+                  <span class="field-message__dot"></span>
+                  <span>{{ getPasswordError(passwordModel) }}</span>
+                </div>
+              </div>
+
+              <div class="auth-meta">
+                <p class="auth-meta__hint">Vous serez automatiquement redirig&eacute; vers votre espace apr&egrave;s connexion.</p>
+              </div>
+
+              <div class="sign__action d-sm-flex justify-content-between mb-30">
+                <div class="sign__agree d-flex align-items-center">
+                  <input class="m-check-input" type="checkbox" id="remember-me" [(ngModel)]="rememberMe" name="rememberMe" />
+                  <label class="m-check-label" for="remember-me">Se souvenir de moi</label>
+                </div>
+                <div class="sign__forgot">
+                  <a href="javascript:void(0)">Mot de passe oubli&eacute; ?</a>
+                </div>
+              </div>
+
+              <button type="submit" class="e-btn w-100 auth-submit" id="login-submit" [disabled]="loading">
+                <span class="button-inline-content" *ngIf="loading">
+                  <span class="btn-spinner"></span>
+                  <span>Connexion en cours...</span>
+                </span>
+                <span *ngIf="!loading">Se connecter</span>
+              </button>
+
+              <div *ngIf="successMessage" class="auth-feedback auth-feedback--success">
+                <strong>Connexion r&eacute;ussie !</strong> Redirection en cours...
+              </div>
+              <div *ngIf="errorMessage" class="auth-feedback auth-feedback--error">
+                <strong>Connexion impossible.</strong> {{ errorMessage }}
+              </div>
+
+              <div class="sign__new text-center mt-20">
+                <p>Pas encore de compte ? <a routerLink="/register">Cr&eacute;er un compte</a></p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

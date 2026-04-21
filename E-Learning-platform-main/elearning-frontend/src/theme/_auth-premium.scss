@@ -1,0 +1,160 @@
+@use './premium-tokens' as tokens;
+
+@mixin apply($root: '.auth-screen') {
+  #{$root} {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top left, rgba(tokens.$brand-500, 0.12), transparent 26%),
+      radial-gradient(circle at bottom right, rgba(tokens.$accent-500, 0.1), transparent 24%);
+  }
+
+  #{$root} .sign__wrapper {
+    padding: 34px 34px 30px;
+    border-radius: 28px;
+    border: 1px solid rgba(215, 227, 248, 0.92);
+    box-shadow: 0 26px 80px rgba(15, 23, 42, 0.12);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+  }
+
+  #{$root} .sign__header p {
+    color: tokens.$muted-600;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+  }
+
+  #{$root} .sign__form form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  #{$root} .sign__header span {
+    color: rgba(tokens.$brand-500, 0.34);
+  }
+
+  #{$root} .sign__input-wrapper h5 {
+    margin-bottom: 0.65rem;
+    color: tokens.$ink-900;
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  #{$root} :is(.sign__input input, .sign__input--select select) {
+    @include tokens.control-base;
+    width: 100%;
+    height: 52px;
+    padding: 0 44px 0 16px;
+    border-radius: 12px;
+    font-size: 0.94rem;
+  }
+
+  #{$root} .sign__input {
+    position: relative;
+  }
+
+  #{$root} .sign__input i {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 16px;
+    color: tokens.$muted-500;
+    pointer-events: none;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #{$root} :is(.sign__input input, .sign__input--select select).is-invalid {
+    border-color: rgba(239, 68, 68, 0.34);
+    background: rgba(254, 242, 242, 0.9);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+  }
+
+  #{$root} .sign__input-wrapper--invalid h5 {
+    color: tokens.$danger-600;
+  }
+
+  #{$root} .sign__action {
+    gap: 14px;
+    margin-top: 0.25rem;
+  }
+
+  #{$root} .m-check-label,
+  #{$root} .sign__forgot a,
+  #{$root} .sign__new p {
+    color: tokens.$muted-600;
+  }
+
+  #{$root} .sign__forgot a,
+  #{$root} .sign__new a {
+    font-weight: 700;
+    color: tokens.$brand-600;
+    transition: color 0.2s ease;
+  }
+
+  #{$root} .sign__forgot a:hover,
+  #{$root} .sign__new a:hover {
+    color: tokens.$accent-600;
+  }
+
+  #{$root} .auth-submit {
+    @include tokens.primary-button;
+    min-height: 58px;
+    border-radius: 18px;
+    font-size: 0.96rem;
+    font-weight: 700;
+  }
+
+  #{$root} .auth-feedback {
+    margin-top: 1rem;
+    padding: 0.95rem 1rem;
+    border-radius: 16px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+  }
+
+  #{$root} .auth-feedback--success {
+    color: tokens.$success-600;
+    background: rgba(209, 250, 229, 0.76);
+    border-color: rgba(167, 243, 208, 0.82);
+  }
+
+  #{$root} .auth-feedback--error {
+    color: tokens.$danger-600;
+    background: rgba(254, 226, 226, 0.76);
+    border-color: rgba(252, 202, 202, 0.86);
+  }
+
+  #{$root} .auth-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-top: 0.55rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  #{$root} .auth-meta__hint {
+    margin: 0;
+    color: tokens.$muted-600;
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    #{$root} .sign__wrapper {
+      padding: 26px 22px 24px;
+      border-radius: 24px;
+    }
+
+    #{$root} :is(.sign__input input, .sign__input--select select) {
+      border-radius: 16px;
+      font-size: 0.94rem;
+    }
+  }
+}

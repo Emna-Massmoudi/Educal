@@ -1,4 +1,5 @@
-<footer>
+<!-- PUBLIC FOOTER -->
+<footer *ngIf="!isAuthenticated; else authFooter">
   <div class="footer__area footer-bg">
     <div class="footer__top pt-90 pb-40">
       <div class="container">
@@ -38,7 +39,6 @@
                   <ul>
                     <li><a [routerLink]="['/home']">Accueil</a></li>
                     <li><a (click)="naviguerConnexion()" style="cursor: pointer;">Connexion</a></li>
-
                     <li><a [routerLink]="['/register']">Inscription</a></li>
                     <li><a [routerLink]="['/home']" fragment="courses">Nos cours</a></li>
                   </ul>
@@ -99,3 +99,82 @@
     </div>
   </div>
 </footer>
+
+<!-- AUTHENTICATED FOOTER -->
+<ng-template #authFooter>
+  <footer class="footer" style="background:#0e1133; padding-top:40px; margin-top:40px;">
+    <div class="container">
+      <div class="row">
+
+        <!-- LOGO -->
+        <div class="col">
+          <div class="footer__widget">
+            <h3 class="footer__widget-title">EduNet</h3>
+            <div class="footer__widget-body">
+              <p>Plateforme moderne pour apprendre et progresser.</p>
+            </div>
+
+            <div class="footer__social">
+              <ul>
+                <li><a href="#">F</a></li>
+                <li><a href="#" class="tw">T</a></li>
+                <li><a href="#" class="pin">P</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- MENU -->
+        <div class="col">
+          <div class="footer__widget">
+            <h3 class="footer__widget-title">Navigation</h3>
+            <div class="footer__link">
+              <ul>
+                <li>
+                  <a href="javascript:void(0)" (click)="changeSection('dashboard')">
+                    Tableau de bord
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)" (click)="changeSection('catalogue')">
+                    Catalogue
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)" (click)="changeSection('mesCours')">
+                    Mes cours
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)" (click)="changeSection('profil')">
+                    Profil
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="col">
+          <div class="footer__widget">
+            <h3 class="footer__widget-title">Contact</h3>
+            <div class="footer__widget-body">
+              <p>Email: contact@edunet.com</p>
+              <p>Tel: +216 00 000 000</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <div class="container">
+        <div class="footer__copyright text-center">
+          <p>© {{ currentYear }} EduNet. Tous droits réservés.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</ng-template>

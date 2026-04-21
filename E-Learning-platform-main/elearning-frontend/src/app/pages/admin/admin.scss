@@ -133,8 +133,8 @@ $border-2:  tokens.$border-brand;
 
 // ── Main content ──────────────────────────────────────
 .main-content {
-  margin-left: 260px;
-  flex: 1;
+  margin-left: 30px;
+  flex: 0;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -237,3 +237,91 @@ $border-2:  tokens.$border-brand;
 }
 
 @include workspaceShell.apply('.admin-layout', false);
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 20px;
+  background: white;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* LEFT */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* 🔥 rapprocher logo + texte */
+}
+
+/* CENTER */
+.navbar-center {
+  display: flex;
+  gap: 12px;
+}
+
+/* RIGHT */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* LOGO */
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #2b4eff, #14b8a6);
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+}
+
+/* TEXTE */
+.brand-text {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+/* NAV */
+.nav-item {
+  padding: 8px 14px;
+  border-radius: 10px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background: rgba(43,78,255,0.1);
+  color: #2b4eff;
+}
+
+/* AVATAR */
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2b4eff, #8b5cf6);
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* LOGOUT */
+.btn-logout {
+  border-radius: 999px;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  padding: 6px 14px;
+  background: transparent;
+}
+
+.btn-logout:hover {
+  background: rgba(239,68,68,0.1);
+}
